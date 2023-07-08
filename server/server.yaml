@@ -1,6 +1,11 @@
-addr: 172.0.0.1:6969
-fraction_fit: 0.5
-fraction_evaluate: 0.5
-min_fit_clients: 1
-min_evaluate_clients: 1
-min_available_clients: 3
+common:
+  addr: 172.0.0.1:6969
+  model: LogisticRegression
+server:
+  fraction_fit: 0.5
+  fraction_evaluate: 0.5
+  # min_fit_clients: 1
+  # min_evaluate_clients: 1
+  min_available_clients: 3 #
+client:
+  hello: world
