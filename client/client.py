@@ -1,8 +1,10 @@
+from typing import Any
 import flwr as fl
 import model.LogisticRegression as model_chosen
 import argparse
 import torch
 import data
+from sklearn.linear_model import LogisticRegression
 
 class MyClient(fl.client.NumPyClient):
     def __init__(
@@ -24,21 +26,32 @@ class MyClient(fl.client.NumPyClient):
         self.validation_split = validation_split
         self.model = model
         self.model_name = model_name
-
-    def fit(self, parameters, config):
+        
+    def __set_parameters(self, parameters):
         model_chosen.set_model_params(self.model, parameters)
+
+    def __get_parameters(self, parameters):
+        return model_chosen.get_model_params(self.model, parameters)
+    
+    def __train(self, config):
+        model_chosen.train(self.model, self.X_train, self.y_train, epochs=1)
+
+    def __evaluate(self, config):
+        return model_chosen.evaluate(self.model, self.X_eval, self.y_eval)
+    
+    def fit(self, parameters, config):
+        self.__set_parameters(parameters)
         print(config)
         # if self.model_name == 'LogisticRegression':
         # import fit function from model/LogisticRegression.py
         #if self.model_name == 'LogisticRegression':
-        model_chosen.train(self.model, self.X_train, self.y_train, epochs=1)
-    def evaluate(self, parameters, config):
-        model_chosen.set_model_params(self.model, parameters)
-        print(config)
-        model_chosen.evaluate(self.model, self.X_eval, self.y_eval)
+        #model_chosen.train(self.model, self.X_train, self.y_train, epochs=1)
+        self.__train(parameters, config)
 
-    def get_parameters(self):
-        pass
+    def evaluate(self, parameters, config):
+        self.__set_parameters(parameters)
+        print(config)
+        return self.__evaluate(parameters, config)
 
 
 def main() -> None:
@@ -72,8 +85,7 @@ def main() -> None:
                       X_eval= X_eval, 
                       y_eval= y_eval, 
                       device= device, 
-                      model=None,
-                      model_chosen, 
+                      model=LogisticRegression(), 
                       "LogisticRegression")
 
     fl.client.start_numpy_client(server_address="127.0.0.1:8080", client=client)

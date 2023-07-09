@@ -14,7 +14,13 @@ base_strategy = fl.server.strategy.FedAvg(
         #min_evaluate_clients=server_config["min_evaluate_clients"],
         #min_available_clients=server_config["min_available_clients"],
         #evaluate_fn=get_evaluate_fn(model, args.toy),
-        on_fit_config_fn=fit_config,
-        on_evaluate_config_fn=evaluate_config,
+        #on_fit_config_fn=fit_config,
+        #on_evaluate_config_fn=evaluate_config,
         # initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
+    )
+
+base_mnist_strategy = fl.server.strategy.FedAvg(
+        min_available_clients=2,
+        #evaluate_fn=get_evaluate_fn(model),
+        #on_fit_config_fn=fit_round,
     )
