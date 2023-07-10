@@ -23,7 +23,7 @@ def evaluate_config(server_round: int):
     return {"val_steps": val_steps}
 
 
-def load_mnist() -> Dataset:
+def load_mnist(): #-> Dataset:
     """Loads the MNIST dataset using OpenML.
 
     OpenML dataset link: https://www.openml.org/d/554
