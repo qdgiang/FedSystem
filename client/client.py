@@ -52,6 +52,7 @@ class MyClient(fl.client.NumPyClient):
 
     def evaluate(self, parameters, config):
         self.__set_parameters(parameters)
+        print("Now evaluate")
         print(config)
         return self.__evaluate(config)
 
@@ -80,7 +81,12 @@ def main() -> None:
 
     # Load a subset of CIFAR-10 to simulate the local data partition
     (X_train, y_train), (X_eval, y_eval) = MNIST.MNIST_DATA(args.partition_id).get_data()
-    my_model = LogisticRegression()
+    my_model = LogisticRegression(
+        #penalty="l2",
+        max_iter=1,  # local epoch
+        warm_start=True,  # prevent refreshing weights when fitting
+    )
+
     model_chosen.set_initial_params(my_model)
     # Start Flower client
     client = MyClient(X_train= X_train, 

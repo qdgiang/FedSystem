@@ -1,5 +1,5 @@
 import flwr as fl
-from strategy import base_strategy
+from strategy import base_strategy, base_mnist_strategy
 import yaml
 
 def main():
@@ -12,7 +12,7 @@ def main():
     fl.server.start_server(
         server_address="0.0.0.0:6969",
         #config=fl.server.ServerConfig(num_rounds=10),
-        strategy=base_strategy,
+        strategy=base_mnist_strategy,
         config=fl.server.ServerConfig(num_rounds=5)
     )
 

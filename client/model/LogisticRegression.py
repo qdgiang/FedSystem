@@ -41,6 +41,7 @@ def evaluate(
     """Evaluates a sklearn LogisticRegression model."""
     loss = log_loss(y_test, model.predict_proba(X_test))
     accuracy = model.score(X_test, y_test)
+    print(f"Loss: {loss}, Accuracy: {accuracy}")
     return loss, len(X_test), {"accuracy": accuracy}
 
 def set_initial_params(model: LogisticRegression):
