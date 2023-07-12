@@ -40,7 +40,10 @@ def get_evaluate_fn(model: LogisticRegression):
 
     # Load test data here to avoid the overhead of doing it in `evaluate` itself
     _, (X_test, y_test) = load_mnist()
-
+    # use the first 10 samples of the test set
+    X_test = X_test[:100]
+    y_test = y_test[:100]
+    model.fit(X_test, y_test)
     # The `evaluate` function will be called after every round
     def evaluate(server_round, parameters: fl.common.NDArrays, config):
         # Update model with the latest parameters
@@ -53,19 +56,6 @@ def get_evaluate_fn(model: LogisticRegression):
 
 
 model = LogisticRegression()
-
-
-base_strategy = fl.server.strategy.FedAvg(
-        fraction_fit=server_config["server"]["fraction_fit"],
-        fraction_evaluate=server_config["server"]["fraction_evaluate"],
-        #min_fit_clients=server_config["server"]["min_fit_clients"],
-        #min_evaluate_clients=server_config["min_evaluate_clients"],
-        #min_available_clients=server_config["min_available_clients"],
-        #evaluate_fn=get_evaluate_fn(model, args.toy),
-        #on_fit_config_fn=fit_config,
-        #on_evaluate_config_fn=evaluate_config,
-        # initial_parameters=fl.common.ndarrays_to_parameters(model_parameters),
-    )
 def fit_round(server_round: int):
     """Send round number to client."""
     return {"server_round": server_round}
