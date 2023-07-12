@@ -1,5 +1,5 @@
 import flwr as fl
-from server_utils import fit_config, evaluate_config
+from server.utils import fit_config, evaluate_config
 import yaml
 import openml
 from sklearn.metrics import log_loss

@@ -1,8 +1,8 @@
 import openml
 import numpy as np
-from .base_data import BaseDataClass
+from .BaseData import BaseDataClass
 
-class MNIST_DATA(BaseDataClass):
+class MnistDataClass(BaseDataClass):
     def __load_mnist(self):  # -> Dataset
         """Loads the MNIST dataset using OpenML.
 

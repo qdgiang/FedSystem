@@ -38,7 +38,7 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
 from aggregate import aggregate, weighted_loss_avg
-from strategy import Strategy
+from server.strategy.Strategy import Strategy
 
 WARNING_MIN_AVAILABLE_CLIENTS_TOO_LOW = """
 Setting `min_available_clients` lower than `min_fit_clients` or
@@ -49,7 +49,7 @@ than or equal to the values of `min_fit_clients` and `min_evaluate_clients`.
 
 
 # flake8: noqa: E501
-class FedAvg(Strategy):
+class BaseFedAvg(Strategy):
     """Configurable FedAvg strategy implementation."""
 
     # pylint: disable=too-many-arguments,too-many-instance-attributes,line-too-long

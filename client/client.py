@@ -2,10 +2,10 @@ from typing import Any
 import sys
 sys.path.append('.')
 import flwr as fl
-import model.LogisticRegression as model_chosen
+import client.model.logistic_regression as model_chosen
 import argparse
 import torch
-from data import MNIST
+from client.data import mnist
 from sklearn.linear_model import LogisticRegression
 
 class MyClient(fl.client.NumPyClient):
@@ -80,7 +80,7 @@ def main() -> None:
     )
 
     # Load a subset of CIFAR-10 to simulate the local data partition
-    (X_train, y_train), (X_eval, y_eval) = MNIST.MNIST_DATA(args.partition_id).get_data()
+    (X_train, y_train), (X_eval, y_eval) = mnist.MNIST_DATA(args.partition_id).get_data()
     my_model = LogisticRegression(
         #penalty="l2",
         max_iter=1,  # local epoch
