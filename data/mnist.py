@@ -29,11 +29,9 @@ def get_client_data(partition_id: int):
     (client_data, client_label) = partition(full_data,full_label, 10)[partition_id]
     X_train, y_train = client_data[:5000], client_label[:5000]
     X_val, y_val = client_data[5000:], client_label[5000:]
-    return (X_train, y_train), (X_val, y_val)
+    return X_train, y_train, X_val, y_val
 
 
 def get_server_data():
     (_, _), (X_test, y_test) = load_mnist()
-    print(X_test.shape)
-    print(y_test.shape)
-    return (X_test, y_test)
+    return X_test, y_test

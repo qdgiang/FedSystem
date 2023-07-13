@@ -6,7 +6,21 @@ from sklearn.metrics import log_loss
 XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
 
-def get_model_parameters(model: LogisticRegression) -> LogRegParams:
+def init_model(config: dict):
+    """Initializes a sklearn LogisticRegression model."""
+
+    model = LogisticRegression(
+        penalty=config.get("penalty", "l2"),
+        dual=config.get("dual", False),
+        tol=config.get("tol", 0.0001),
+        C=config.get("C", 1.0),
+        max_iter=config.get("max_iter", 100),
+        warm_start=config.get("warm_start", False)
+    )
+    _set_initial_params(model, config)
+    return model
+
+def get_parameters(model: LogisticRegression) -> LogRegParams:
     """Returns the paramters of a sklearn LogisticRegression model."""
     if model.fit_intercept:
         params = [
@@ -19,7 +33,7 @@ def get_model_parameters(model: LogisticRegression) -> LogRegParams:
         ]
     return params
 
-def set_model_parameters(
+def set_parameters(
     model: LogisticRegression, params: LogRegParams
 ) -> LogisticRegression:
     """Sets the parameters of a sklean LogisticRegression model."""
@@ -33,7 +47,7 @@ def fit(
 ) -> LogisticRegression:
     """Trains a sklearn LogisticRegression model."""
     model.fit(X_train, y_train)
-    return get_model_parameters(model), len(X_train), {}
+    return get_parameters(model), len(X_train), {}
 
 def evaluate(
     model: LogisticRegression, X_test: np.ndarray, y_test: np.ndarray
@@ -44,16 +58,19 @@ def evaluate(
     print(f"Loss: {loss}, Accuracy: {accuracy}")
     return loss, len(X_test), {"accuracy": accuracy}
 
-def set_initial_params(model: LogisticRegression):
-    """Sets initial parameters as zeros Required since model params are
+######################################
+
+def _set_initial_params(model: LogisticRegression, config: dict):
+    """Sets initial parameters as zeros. 
+    Required since model params are
     uninitialized until model.fit is called.
 
     But server asks for initial parameters from clients at launch. Refer
     to sklearn.linear_model.LogisticRegression documentation for more
     information.
     """
-    n_classes = 10  # MNIST has 10 classes
-    n_features = 784  # Number of features in dataset
+    n_classes = config.get("n_classes", 10)
+    n_features = config.get("n_features", 784)
     model.classes_ = np.array([i for i in range(10)])
 
     model.coef_ = np.zeros((n_classes, n_features))
