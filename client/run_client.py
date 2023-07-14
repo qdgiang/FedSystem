@@ -2,7 +2,7 @@ import flwr as fl
 import argparse
 import torch
 
-from .client import MyClient
+from client import MyClient
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
 

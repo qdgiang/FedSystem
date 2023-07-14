@@ -8,14 +8,15 @@ class ModelManager:
         assert model_name in ["logistic_regression", "cnn"]
         self.model_name = model_name
         self.config = config
-        self.model_source = importlib.import_module(model_name)
+        model_file_name = "." + model_name
+        self.model_source = importlib.import_module(model_file_name, package="model")
         self.model = self.model_source.init_model(config)
     
     def get_params(self):
-        return self.model_source.get_model_parameters(self.model)
+        return self.model_source.get_parameters(self.model)
     
     def set_params(self, parameters):
-        self.model_source.set_model_parameters(self.model, parameters)
+        self.model_source.set_parameters(self.model, parameters)
 
     def get_model(self):
         return self.model

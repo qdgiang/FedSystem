@@ -14,7 +14,7 @@ def main():
         server_address="0.0.0.0:6969",
         #config=fl.server.ServerConfig(num_rounds=10),
         strategy=base_mnist_strategy,
-        config=fl.server.ServerConfig(num_rounds=5)
+        config=fl.server.ServerConfig(num_rounds=100)
     )
 
 

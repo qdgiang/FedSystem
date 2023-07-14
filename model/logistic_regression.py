@@ -2,7 +2,7 @@ from sklearn.linear_model import LogisticRegression
 from typing import Tuple, Union, List
 import numpy as np
 from sklearn.metrics import log_loss
-
+import warnings
 XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
 
@@ -14,8 +14,8 @@ def init_model(config: dict):
         dual=config.get("dual", False),
         tol=config.get("tol", 0.0001),
         C=config.get("C", 1.0),
-        max_iter=config.get("max_iter", 100),
-        warm_start=config.get("warm_start", False)
+        max_iter=config.get("max_iter", 1),
+        warm_start=config.get("warm_start", True)
     )
     _set_initial_params(model, config)
     return model
@@ -46,6 +46,8 @@ def fit(
     model: LogisticRegression, X_train: np.ndarray, y_train: np.ndarray, config: dict = None
 ) -> LogisticRegression:
     """Trains a sklearn LogisticRegression model."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
     model.fit(X_train, y_train)
     return get_parameters(model), len(X_train), {}
 
