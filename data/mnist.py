@@ -24,7 +24,7 @@ def partition(X: np.ndarray, y: np.ndarray, num_partitions: int): # -> XYList:
         zip(np.array_split(X, num_partitions), np.array_split(y, num_partitions))
     )
 
-def get_client_data(partition_id: int):
+def get_client_data(partition_id: int, config: dict = None):
     (full_data, full_label), (_, _) = load_mnist()
     (client_data, client_label) = partition(full_data,full_label, 10)[partition_id]
     X_train, y_train = client_data[:5000], client_label[:5000]
@@ -32,6 +32,6 @@ def get_client_data(partition_id: int):
     return X_train, y_train, X_val, y_val
 
 
-def get_server_data():
+def get_server_data(config: dict = None):
     (_, _), (X_test, y_test) = load_mnist()
     return X_test, y_test
