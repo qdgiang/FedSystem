@@ -39,10 +39,8 @@ def main() -> None:
         "n_features": 784
     }
 
-
     data_manager = DataManager("mnist", "client", data_config)
     model_manager = ModelManager("logistic_regression", model_config)
-
     client = MyClient(data_manager, model_manager)
     fl.client.start_numpy_client(server_address="127.0.0.1:6969", client=client)
     

@@ -43,14 +43,14 @@ def set_parameters(
     return model
 
 def fit(
-    model: LogisticRegression, X_train: np.ndarray, y_train: np.ndarray, config
+    model: LogisticRegression, X_train: np.ndarray, y_train: np.ndarray, config: dict = None
 ) -> LogisticRegression:
     """Trains a sklearn LogisticRegression model."""
     model.fit(X_train, y_train)
     return get_parameters(model), len(X_train), {}
 
 def evaluate(
-    model: LogisticRegression, X_test: np.ndarray, y_test: np.ndarray
+    model: LogisticRegression, X_test: np.ndarray, y_test: np.ndarray, config: dict = None
 ) -> float:
     """Evaluates a sklearn LogisticRegression model."""
     loss = log_loss(y_test, model.predict_proba(X_test))
