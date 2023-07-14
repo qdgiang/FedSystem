@@ -7,8 +7,12 @@ from sklearn.linear_model import LogisticRegression
 # import ModelManager from model/model_manager.py
 # from model.model_manager import ModelManager does not work
 # use another!
-from ...model.model_manager import ModelManager
-from ...data.data_manager import DataManager
+
+
+import sys
+sys.path.append("..") 
+from model.model_manager import ModelManager
+from data.data_manager import DataManager
 from model.logistic_regression import set_parameters
 
 def get_evaluate_fn(model: LogisticRegression):

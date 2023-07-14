@@ -10,8 +10,8 @@ class DataManager:
         self.data_name = data_name
         self.node_type = node_type
         self.partition_id = config["partition_id"] if config is not None else 0
-        
-        data_source = importlib.import_module(self.data_name) # dynamically import the correct data module
+        data_source_name = "." + self.data_name
+        data_source = importlib.import_module(data_source_name, package="data") # dynamically import the correct data module
         if node_type == "client":
             self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.partition_id)
             print("X_train shape: ", self.X_train.shape)
