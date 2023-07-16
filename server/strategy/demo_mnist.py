@@ -44,6 +44,6 @@ def fit_round(server_round: int):
 
 base_mnist_strategy = fl.server.strategy.FedAvg(
         min_available_clients=2,
-        evaluate_fn=get_evaluate_fn(model),
+        #evaluate_fn=get_evaluate_fn(model),
         on_fit_config_fn=fit_round
     )

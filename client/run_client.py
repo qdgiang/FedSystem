@@ -1,7 +1,7 @@
 import flwr as fl
 import argparse
 import torch
-
+import yaml
 from client import MyClient
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
@@ -24,6 +24,10 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    with open("client.yaml", "r") as f:
+        client_config = yaml.safe_load(f)
+    print("Client config:")
+    print(client_config)
     device = torch.device(
         "cuda:0" if torch.cuda.is_available() and args.use_cuda else "cpu"
     )
@@ -39,8 +43,8 @@ def main() -> None:
         "n_features": 784
     }
 
-    data_manager = DataManager("mnist", "client", data_config)
-    model_manager = ModelManager("logistic_regression", model_config)
+    data_manager = DataManager(client_config["data_name"], "client", data_config)
+    model_manager = ModelManager("cnn", model_config)
     client = MyClient(data_manager, model_manager)
     fl.client.start_numpy_client(server_address="127.0.0.1:6969", client=client)
     

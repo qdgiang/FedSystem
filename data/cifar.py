@@ -12,7 +12,7 @@ def load_cifar(NUM_CLIENTS = 5):
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
-    trainset = CIFAR10("./dataset", train=True, download=True, transform=transform)
+    trainset = CIFAR10("../data/dataset", train=True, download=True, transform=transform)
 
     # Split training set into 10 partitions to simulate the individual dataset
     partition_size = len(trainset) // NUM_CLIENTS
@@ -31,7 +31,7 @@ def get_client_data(partition_id: int, config: dict = None):
     ds_train, ds_val = random_split(trainset, lengths, torch.Generator().manual_seed(42))
     trainloader = DataLoader(ds_train, batch_size=BATCH_SIZE, shuffle=True)
     valloader = DataLoader(ds_val, batch_size=BATCH_SIZE)
-    return trainloader, valloader
+    return trainloader, None, valloader, None
 
 def get_server_data(config: dict = None):
     transform = transforms.Compose(

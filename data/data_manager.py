@@ -14,10 +14,13 @@ class DataManager:
         data_source = importlib.import_module(data_source_name, package="data") # dynamically import the correct data module
         if node_type == "client":
             self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.partition_id)
-            print("X_train shape: ", self.X_train.shape)
+            """print("X_train shape: ", self.X_train.shape)
             print("y_train shape: ", self.y_train.shape)
             print("X_val shape: ", self.X_val.shape)
-            print("y_val shape: ", self.y_val.shape)
+            print("y_val shape: ", self.y_val.shape)"""
+            # get shape of torch Dataloader object
+            print("X_train shape: ", self.X_train.dataset.dataset.__dict__)
+            
         else:
             (self.X_test, self.y_test) = data_source.get_server_data()
             print("X_test shape: ", self.X_test.shape)

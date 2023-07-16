@@ -1,5 +1,4 @@
 import flwr as fl
-#from strategy import base_strategy, mnist_strategy
 from strategy.demo_mnist import base_mnist_strategy
 import yaml
 
@@ -12,7 +11,6 @@ def main():
     # Start Flower server for four rounds of federated learning
     fl.server.start_server(
         server_address="0.0.0.0:6969",
-        #config=fl.server.ServerConfig(num_rounds=10),
         strategy=base_mnist_strategy,
         config=fl.server.ServerConfig(num_rounds=100)
     )

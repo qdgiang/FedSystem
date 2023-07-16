@@ -47,10 +47,15 @@ def fit(
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
     model.train()
-    if config is None:
-        epochs = 1
-        verbose = True
-        DEVICE = torch.device("cpu")
+    #if config is None:
+    epochs = 1
+    verbose = True
+    DEVICE = torch.device("cpu")
+    #else: 
+    #    epochs = config["epochs"]
+    #    verbose = config["verbose"]
+    #    DEVICE = config["device"]
+    
     for epoch in range(epochs):
         correct, total, epoch_loss = 0, 0, 0.0
         for images, labels in X_train:
@@ -68,6 +73,7 @@ def fit(
         epoch_acc = correct / total
         if verbose:
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+        return get_parameters(model), len(X_train.dataset), {}
 
 def evaluate(
     model: Net, X_test: DataLoader, y_test: DataLoader, config: dict = None
@@ -76,10 +82,10 @@ def evaluate(
     criterion = torch.nn.CrossEntropyLoss()
     correct, total, loss = 0, 0, 0.0
     model.eval()
-    if config is None:
-        epochs = 1
-        verbose = True
-        DEVICE = torch.device("cpu")
+    #if config is None:
+    epochs = 1
+    verbose = True
+    DEVICE = torch.device("cpu")
     with torch.no_grad():
         for images, labels in X_test:
             images, labels = images.to(DEVICE), labels.to(DEVICE)
@@ -90,4 +96,4 @@ def evaluate(
             correct += (predicted == labels).sum().item()
     loss /= len(X_test.dataset)
     accuracy = correct / total
-    return loss, accuracy
+    return loss, len(X_test.dataset), {"accuracy": accuracy}
