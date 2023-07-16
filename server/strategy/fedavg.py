@@ -37,8 +37,8 @@ from flwr.common.logger import log
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
-from aggregate import aggregate, weighted_loss_avg
-from Strategy import Strategy
+from .aggregate import aggregate, weighted_loss_avg
+from .Strategy import Strategy
 
 WARNING_MIN_AVAILABLE_CLIENTS_TOO_LOW = """
 Setting `min_available_clients` lower than `min_fit_clients` or
