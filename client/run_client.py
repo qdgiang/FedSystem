@@ -9,14 +9,14 @@ from model.model_manager import ModelManager
 def main() -> None:
     parser = argparse.ArgumentParser(description="Flower")
     parser.add_argument(
-        "--partition_id",
+        "--cid",
         type=int,
         default=0,
         required=True,
         help="Set to true to use GPU. Default: False",
     )
-    args = parser.parse_args()
 
+    args = parser.parse_args()
     with open("../common.yaml", "r") as f:
         common_config = yaml.safe_load(f)
 
@@ -28,13 +28,7 @@ def main() -> None:
     )
 
     data_config = {
-        "partition_id": args.partition_id,
-    }
-
-    model_config = {
-        "device": device, 
-        #"n_classes": 2, 
-        #"n_features": 784
+        "cid": args.cid,
     }
 
     data_manager = DataManager(
@@ -45,11 +39,11 @@ def main() -> None:
 
     model_manager = ModelManager(
         common_config["model"], 
-        model_config
     )
 
     client = MyClient(data_manager, model_manager)
-    fl.client.start_numpy_client(server_address=client_config["server_address"], client=client)
+    if client_config["test"] == False:
+        fl.client.start_numpy_client(server_address=client_config["server_address"], client=client)
     
 if __name__ == "__main__":
     main()

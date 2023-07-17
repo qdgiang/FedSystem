@@ -27,7 +27,8 @@ class Net(nn.Module):
         return self.fc3(x)
 
 
-def init_model(config: dict = None) -> Net:
+def init_model(model_config: dict = None) -> Net:
+    print("model_config: ", model_config)
     return Net()
 
 def get_parameters(model: Net) -> list:
@@ -41,20 +42,15 @@ def set_parameters(model: Net, parameters: list) -> None:
     model.load_state_dict(state_dict, strict=True)
 
 def fit(
-    model: Net, X_train: DataLoader, y_train: DataLoader, config: dict = None
+    model: Net, X_train: DataLoader, y_train: DataLoader, model_config: dict = None
 ):
     """Train the network on the training set."""
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
     model.train()
-    #if config is None:
-    epochs = 1
-    verbose = True
-    DEVICE = torch.device("cpu")
-    #else: 
-    #    epochs = config["epochs"]
-    #    verbose = config["verbose"]
-    #    DEVICE = config["device"]
+    epochs = model_config["epochs"]
+    verbose = model_config["verbose"]
+    DEVICE = torch.device("cpu") if model_config["cuda"] == False else torch.device("cuda:0")
     
     for epoch in range(epochs):
         correct, total, epoch_loss = 0, 0, 0.0
@@ -76,16 +72,16 @@ def fit(
         return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc}
 
 def evaluate(
-    model: Net, X_test: DataLoader, y_test: DataLoader, config: dict = None
+    model: Net, X_test: DataLoader, y_test: DataLoader, model_config: dict = None
 ):
     """Test the network"""
     criterion = torch.nn.CrossEntropyLoss()
     correct, total, loss = 0, 0, 0.0
     model.eval()
-    #if config is None:
-    epochs = 1
-    verbose = True
-    DEVICE = torch.device("cpu")
+    epochs = model_config["epochs"]
+    verbose = model_config["verbose"]
+    DEVICE = torch.device("cpu") if model_config["cuda"] == False else torch.device("cuda:0")
+
     with torch.no_grad():
         for images, labels in X_test:
             images, labels = images.to(DEVICE), labels.to(DEVICE)

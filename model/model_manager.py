@@ -1,16 +1,20 @@
 import importlib
+import yaml
 
 class ModelManager:
     def __init__(self, 
                  model_name: str,
-                 config: dict,
     ) -> None:
-        assert model_name in ["logistic_regression", "cnn"]
+        assert model_name in ["logreg", "cnn"]
+        with open("../model/config/" + model_name + ".yaml", "r") as f:
+            self.model_config = yaml.safe_load(f)#.get(model_name)
         self.model_name = model_name
-        self.config = config
-        model_file_name = "." + model_name
-        self.model_source = importlib.import_module(model_file_name, package="model")
-        self.model = self.model_source.init_model(config)
+        self.model_source = importlib.import_module(
+            name= "."+ self.model_name, 
+            package= "model"
+        )
+        self.model = self.model_source.init_model(self.model_config)
+
     
     def get_params(self):
         return self.model_source.get_parameters(self.model)
@@ -21,12 +25,12 @@ class ModelManager:
     def get_model(self):
         return self.model
     
-    def fit_model(self, X_train, y_train, config: dict = None):
-        return self.model_source.fit(self.model, X_train, y_train, config)
+    def fit_model(self, X_train, y_train):
+        return self.model_source.fit(self.model, X_train, y_train, self.model_config)
     
-    def evaluate_model(self, X_test, y_test, config: dict = None): # also use for server model final central testing
-        return self.model_source.evaluate(self.model, X_test, y_test, config)
+    def evaluate_model(self, X_test, y_test): # also use for server model final central testing
+        return self.model_source.evaluate(self.model, X_test, y_test, self.model_config)
 
 if __name__ == "__main__":
-    model_manager = ModelManager("logistic_regression", {"n_classes": 10, "n_features": 784})
+    model_manager = ModelManager("logreg")
     print(model_manager.get_params())

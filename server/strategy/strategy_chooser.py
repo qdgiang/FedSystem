@@ -9,7 +9,7 @@ def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
-def strategy_chooser(strategy_name: str):
+def strategy_chooser(strategy_name: str, strategy_config: dict = None):
     strategy_name = "." + strategy_name
     print("Hmm")
     print(strategy_name)

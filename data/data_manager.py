@@ -9,12 +9,12 @@ class DataManager:
         assert data_name in ["mnist", "cifar", "heart"]
         self.data_name = data_name
         self.node_type = node_type
-        self.partition_id = config["partition_id"] if config is not None else 0
-        print("partition_id: ", self.partition_id)
+        self.cid = config["cid"] if config is not None else 0
+        print("Client ID: ", self.cid)
         data_source_name = "." + self.data_name
         data_source = importlib.import_module(data_source_name, package="data") # dynamically import the correct data module
         if node_type == "client":
-            self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.partition_id)
+            self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.cid)
         else:
             (self.X_test, self.y_test) = data_source.get_server_data()
 

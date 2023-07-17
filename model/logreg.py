@@ -6,18 +6,18 @@ import warnings
 XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
 
-def init_model(config: dict):
+def init_model(model_config: dict):
     """Initializes a sklearn LogisticRegression model."""
 
     model = LogisticRegression(
-        penalty=config.get("penalty", "l2"),
-        dual=config.get("dual", False),
-        tol=config.get("tol", 0.0001),
-        C=config.get("C", 1.0),
-        max_iter=config.get("max_iter", 50),
-        warm_start=config.get("warm_start", False)
+        penalty=model_config.get("penalty", "l2"),
+        dual=model_config.get("dual", False),
+        tol=model_config.get("tol", 0.0001),
+        C=model_config.get("C", 1.0),
+        max_iter=model_config.get("max_iter", 1),
+        warm_start=model_config.get("warm_start", False)
     )
-    _set_initial_params(model, config)
+    _set_initial_params(model, model_config)
     return model
 
 def get_parameters(model: LogisticRegression) -> LogRegParams:
@@ -62,7 +62,7 @@ def evaluate(
 
 ######################################
 
-def _set_initial_params(model: LogisticRegression, config: dict):
+def _set_initial_params(model: LogisticRegression, model_config: dict):
     """Sets initial parameters as zeros. 
     Required since model params are
     uninitialized until model.fit is called.
@@ -71,8 +71,9 @@ def _set_initial_params(model: LogisticRegression, config: dict):
     to sklearn.linear_model.LogisticRegression documentation for more
     information.
     """
-    n_classes = config.get("n_classes", 2)
-    n_features = config.get("n_features", 13)
+    print(model_config)
+    n_classes = model_config.get("n_classes", 2)
+    n_features = model_config.get("n_features", 13)
     model.classes_ = np.array([i for i in range(10)])
 
     model.coef_ = np.zeros((n_classes, n_features))
