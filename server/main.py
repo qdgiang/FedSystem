@@ -21,7 +21,7 @@ def main():
     fl.server.start_server(
         server_address=server_config["server_address"],
         strategy=strategy_chooser(server_config["strategy"]),
-        config=MyConfig(num_rounds=20)
+        config=MyConfig(num_rounds=500)
     )
 
 

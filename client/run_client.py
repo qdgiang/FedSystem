@@ -33,8 +33,8 @@ def main() -> None:
 
     model_config = {
         "device": device, 
-        "n_classes": 10, 
-        "n_features": 784
+        #"n_classes": 2, 
+        #"n_features": 784
     }
 
     data_manager = DataManager(

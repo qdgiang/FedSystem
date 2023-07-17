@@ -14,8 +14,8 @@ def init_model(config: dict):
         dual=config.get("dual", False),
         tol=config.get("tol", 0.0001),
         C=config.get("C", 1.0),
-        max_iter=config.get("max_iter", 1),
-        warm_start=config.get("warm_start", True)
+        max_iter=config.get("max_iter", 50),
+        warm_start=config.get("warm_start", False)
     )
     _set_initial_params(model, config)
     return model
@@ -71,8 +71,8 @@ def _set_initial_params(model: LogisticRegression, config: dict):
     to sklearn.linear_model.LogisticRegression documentation for more
     information.
     """
-    n_classes = config.get("n_classes", 10)
-    n_features = config.get("n_features", 784)
+    n_classes = config.get("n_classes", 2)
+    n_features = config.get("n_features", 13)
     model.classes_ = np.array([i for i in range(10)])
 
     model.coef_ = np.zeros((n_classes, n_features))

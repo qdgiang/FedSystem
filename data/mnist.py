@@ -19,7 +19,7 @@ def load_mnist():  # -> Dataset
     x_test, y_test = X[60000:], y[60000:]
     return (x_train, y_train), (x_test, y_test)
 
-def partition(X: np.ndarray, y: np.ndarray, num_partitions: int): # -> XYList:
+def partition(X: np.ndarray, y: np.ndarray, num_partitions: int):
     return list(
         zip(np.array_split(X, num_partitions), np.array_split(y, num_partitions))
     )

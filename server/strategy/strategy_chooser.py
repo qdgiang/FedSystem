@@ -18,11 +18,11 @@ def strategy_chooser(strategy_name: str):
         print("Noice")
         return strategy_file.BaseFedAvg(
             fraction_fit=0.6,
-            min_available_clients=5,
+            min_available_clients=4,
             min_fit_clients=3,
             fraction_evaluate=0.1,
             min_evaluate_clients=2,
-            fit_metrics_aggregation_fn=weighted_average,
+            #fit_metrics_aggregation_fn=weighted_average,
             evaluate_metrics_aggregation_fn=weighted_average,
             )
     else:

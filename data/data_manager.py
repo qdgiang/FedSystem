@@ -6,7 +6,7 @@ class DataManager:
                  node_type: str = "client",
                  config: dict = None
     ) -> None:
-        assert data_name in ["mnist", "cifar"]
+        assert data_name in ["mnist", "cifar", "heart"]
         self.data_name = data_name
         self.node_type = node_type
         self.partition_id = config["partition_id"] if config is not None else 0

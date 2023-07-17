@@ -1,3 +1,3 @@
-model: cnn
-data: cifar
+model: logistic_regression
+data: heart
 cuda: False
