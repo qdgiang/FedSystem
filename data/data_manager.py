@@ -10,6 +10,7 @@ class DataManager:
         self.data_name = data_name
         self.node_type = node_type
         self.partition_id = config["partition_id"] if config is not None else 0
+        print("partition_id: ", self.partition_id)
         data_source_name = "." + self.data_name
         data_source = importlib.import_module(data_source_name, package="data") # dynamically import the correct data module
         if node_type == "client":

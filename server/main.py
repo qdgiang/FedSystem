@@ -18,9 +18,6 @@ def main():
 
     with open("server.yaml", "r") as f:
         server_config = yaml.safe_load(f)
-
-    strategy_name = "base_mnist_strategy"
-
     fl.server.start_server(
         server_address=server_config["server_address"],
         strategy=strategy_chooser(server_config["strategy"]),

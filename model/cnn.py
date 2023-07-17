@@ -73,7 +73,7 @@ def fit(
         epoch_acc = correct / total
         if verbose:
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
-        return get_parameters(model), len(X_train.dataset), {}
+        return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc}
 
 def evaluate(
     model: Net, X_test: DataLoader, y_test: DataLoader, config: dict = None
