@@ -19,9 +19,9 @@ def strategy_chooser(strategy_name: str, strategy_config: dict = None):
         return strategy_file.BaseFedAvg(
             fraction_fit=0.6,
             min_available_clients=4,
-            min_fit_clients=3,
+            min_fit_clients=4,
             fraction_evaluate=0.1,
-            min_evaluate_clients=2,
+            min_evaluate_clients=4,
             #fit_metrics_aggregation_fn=weighted_average,
             evaluate_metrics_aggregation_fn=weighted_average,
             )

@@ -5,7 +5,7 @@ class ModelManager:
     def __init__(self, 
                  model_name: str,
     ) -> None:
-        assert model_name in ["logreg", "cnn"]
+        assert model_name in ["logreg", "cnn", "svm"]
         with open("../model/config/" + model_name + ".yaml", "r") as f:
             self.model_config = yaml.safe_load(f)#.get(model_name)
         self.model_name = model_name

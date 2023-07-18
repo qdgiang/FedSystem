@@ -15,7 +15,7 @@ def init_model(model_config: dict):
         tol=model_config.get("tol", 0.0001),
         C=model_config.get("C", 1.0),
         max_iter=model_config.get("max_iter", 1),
-        warm_start=model_config.get("warm_start", False)
+        warm_start=model_config.get("warm_start", True)
     )
     _set_initial_params(model, model_config)
     return model
