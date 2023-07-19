@@ -1,0 +1,6 @@
+n_features: 13
+n_classes: 2
+epochs: 1
+verbose: True
+device: cpu
+

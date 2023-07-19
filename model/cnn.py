@@ -50,7 +50,7 @@ def fit(
     model.train()
     epochs = model_config["epochs"]
     verbose = model_config["verbose"]
-    DEVICE = torch.device("cpu") if model_config["cuda"] == False else torch.device("cuda:0")
+    DEVICE = torch.device("cpu") if model_config["device"] == "cpu" else torch.device("cuda:0")
     
     for epoch in range(epochs):
         correct, total, epoch_loss = 0, 0, 0.0

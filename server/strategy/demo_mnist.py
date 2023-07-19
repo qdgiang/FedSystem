@@ -13,7 +13,7 @@ import sys
 sys.path.append("..") 
 from model.model_manager import ModelManager
 from data.data_manager import DataManager
-from model.logistic_regression import set_parameters
+from model.logreg import set_parameters
 
 def get_evaluate_fn(model: LogisticRegression):
     """Return an evaluation function for server-side evaluation."""

@@ -17,10 +17,10 @@ def strategy_chooser(strategy_name: str, strategy_config: dict = None):
     if strategy_name == ".fedavg":
         print("Noice")
         return strategy_file.BaseFedAvg(
-            fraction_fit=0.6,
+            fraction_fit=0.05,
             min_available_clients=4,
             min_fit_clients=4,
-            fraction_evaluate=0.1,
+            fraction_evaluate=0.05,
             min_evaluate_clients=4,
             #fit_metrics_aggregation_fn=weighted_average,
             evaluate_metrics_aggregation_fn=weighted_average,

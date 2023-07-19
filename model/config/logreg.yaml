@@ -1,5 +1,5 @@
-n_classes: 2
 n_features: 13
+n_classes: 2
 penalty: l2
 dual: False
 tol: 0.0001

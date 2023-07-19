@@ -1,3 +1,4 @@
-model: svm
+model: mlp
 data: heart
+split: False
 cuda: False
