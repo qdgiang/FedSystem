@@ -33,7 +33,7 @@ class DataManager:
         return self.y_test
     
 if __name__ == "__main__":
-    data_manager = DataManager("mnist", "client", 0)
+    data_manager = DataManager("client", {"data": "heart", "cid": 0})
     #data_manager = DataManager("mnist", "server", 0)
     print("=====")
-    data_manager2 = DataManager("mnist", "server")
+    #data_manager2 = DataManager("mnist", "server")

@@ -1,24 +1,18 @@
-from flamby.datasets.fed_heart_disease import FedHeartDisease
+from FLamby.flamby.datasets.fed_tcga_brca import FedTcgaBrca 
+#from .FLamby.flamby.datasets.fed_heart_disease import FedHeartDisease
 from torch.utils.data import DataLoader as dl
 import numpy as np
 
 
 
 def _get_np(center_id: int, train: bool, config: dict = None):
-    center = FedHeartDisease(center=center_id, train=train)
+    center = FedTcgaBrca(center=center_id, train=train)
     if config["split"] == True:
         c0_iter = iter(dl(center, batch_size=None, num_workers=0))
         X_train = np.empty((1,13))
         y_train = np.empty((1,))
-        flag = True
         for point, target in c0_iter:
             # reshape point to (13,1)
-            if flag == True:
-                print(point.shape)
-                print(target.shape)
-                print(point)
-                print(target)
-                flag = False
             small_x = point.numpy().reshape(1,13)
             small_y = target.numpy()
             X_train = np.append(X_train, small_x, axis=0)
@@ -65,3 +59,7 @@ if __name__ == "__main__":
     print(y_train[0])
     print(X_val[0])
     print(y_val[0])
+    print(X_train[0].shape)
+    print(y_train[0].shape)
+    print(X_val[0].shape)
+    print(y_val[0].shape)
