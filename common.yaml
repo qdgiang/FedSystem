@@ -1,4 +1,4 @@
-model: mlp
-data: heart
-split: False
+model: svm
+data: tcga
+split: True
 cuda: False

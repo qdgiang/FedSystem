@@ -6,7 +6,7 @@ class DataManager:
                  config: dict = None
     ) -> None:
         data_name = config["data"]
-        assert data_name in ["mnist", "cifar", "heart"]
+        assert data_name in ["mnist", "cifar", "heart", "tcga"]
         self.data_name = data_name
         self.node_type = node_type
         self.data_config = config

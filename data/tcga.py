@@ -1,4 +1,4 @@
-from FLamby.flamby.datasets.fed_tcga_brca import FedTcgaBrca 
+from flamby.datasets.fed_tcga_brca import FedTcgaBrca 
 #from .FLamby.flamby.datasets.fed_heart_disease import FedHeartDisease
 from torch.utils.data import DataLoader as dl
 import numpy as np
@@ -9,12 +9,13 @@ def _get_np(center_id: int, train: bool, config: dict = None):
     center = FedTcgaBrca(center=center_id, train=train)
     if config["split"] == True:
         c0_iter = iter(dl(center, batch_size=None, num_workers=0))
-        X_train = np.empty((1,13))
+        X_train = np.empty((1,39))
         y_train = np.empty((1,))
         for point, target in c0_iter:
             # reshape point to (13,1)
-            small_x = point.numpy().reshape(1,13)
+            small_x = point.numpy().reshape(1,39)
             small_y = target.numpy()
+            small_y = small_y[:1]
             X_train = np.append(X_train, small_x, axis=0)
             y_train = np.append(y_train, small_y, axis=0)
         X_train = X_train[1:]
@@ -27,39 +28,20 @@ def _get_np(center_id: int, train: bool, config: dict = None):
 
 def get_client_data(center_id: int, config: dict = None):
     X_train, y_train = _get_np(center_id, train = True, config = config)
-    print(len(X_train))
+    print(X_train.shape)
+    print(y_train.shape)
+    print(y_train)
     X_val, y_val = _get_np(center_id, train = False, config = config)
-    print(len(X_val))
+    print(X_val.shape)
+    print(y_val.shape)
     return X_train, y_train, X_val, y_val
 
 def get_server_data(config: dict = None):
-    return _get_np(3, train = False)
+    return _get_np(3, train = False, config = config)
 
 if __name__ == "__main__":
     config = {"split": True}
     X_train, y_train, X_val, y_val = get_client_data(0, config)
+    X_train, y_train = get_server_data(config)
     print(X_train.shape)
     print(y_train.shape)
-    print(X_val.shape)
-    print(y_val.shape)
-    print(X_train[0])
-    print(y_train[0])
-    print(X_val[0])
-    print(y_val[0])
-    print(X_train[0].shape)
-    print(y_train[0].shape)
-    print(X_val[0].shape)
-    print(y_val[0].shape)
-    X_train, y_train, X_val, y_val = get_server_data(config)
-    print(X_train.shape)
-    print(y_train.shape)
-    print(X_val.shape)
-    print(y_val.shape)
-    print(X_train[0])
-    print(y_train[0])
-    print(X_val[0])
-    print(y_val[0])
-    print(X_train[0].shape)
-    print(y_train[0].shape)
-    print(X_val[0].shape)
-    print(y_val[0].shape)

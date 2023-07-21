@@ -10,15 +10,7 @@ def _get_np(center_id: int, train: bool, config: dict = None):
         c0_iter = iter(dl(center, batch_size=None, num_workers=0))
         X_train = np.empty((1,13))
         y_train = np.empty((1,))
-        flag = True
         for point, target in c0_iter:
-            # reshape point to (13,1)
-            if flag == True:
-                print(point.shape)
-                print(target.shape)
-                print(point)
-                print(target)
-                flag = False
             small_x = point.numpy().reshape(1,13)
             small_y = target.numpy()
             X_train = np.append(X_train, small_x, axis=0)
@@ -39,29 +31,9 @@ def get_client_data(center_id: int, config: dict = None):
     return X_train, y_train, X_val, y_val
 
 def get_server_data(config: dict = None):
-    return _get_np(3, train = False)
+    return _get_np(3, train = False, config = config)
 
 if __name__ == "__main__":
     config = {"split": True}
     X_train, y_train, X_val, y_val = get_client_data(0, config)
-    print(X_train.shape)
-    print(y_train.shape)
-    print(X_val.shape)
-    print(y_val.shape)
-    print(X_train[0])
-    print(y_train[0])
-    print(X_val[0])
-    print(y_val[0])
-    print(X_train[0].shape)
-    print(y_train[0].shape)
-    print(X_val[0].shape)
-    print(y_val[0].shape)
-    X_train, y_train, X_val, y_val = get_server_data(config)
-    print(X_train.shape)
-    print(y_train.shape)
-    print(X_val.shape)
-    print(y_val.shape)
-    print(X_train[0])
-    print(y_train[0])
-    print(X_val[0])
-    print(y_val[0])
+    X_test, y_test = get_server_data(config)
