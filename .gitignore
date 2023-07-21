@@ -1,5 +1,6 @@
 # My ignored files
 data/dataset/
+.vscode/
 
 
 # Byte-compiled / optimized / DLL files
