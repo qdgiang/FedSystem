@@ -7,8 +7,6 @@ XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
 
 def init_model(model_config: dict):
-    print("SVM nice")
-    print(model_config)
     model = LinearSVC(
         #penalty=model_config.get("penalty", "l2"),
         #dual=model_config.get("dual", False),
@@ -41,7 +39,7 @@ def set_parameters(
     return model
 
 def fit(
-    model: LinearSVC, X_train: np.ndarray, y_train: np.ndarray, config: dict = None
+    model: LinearSVC, X_train: np.ndarray, y_train: np.ndarray, config: dict
 ):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -49,7 +47,7 @@ def fit(
     return get_parameters(model), len(X_train), {}
 
 def evaluate(
-    model: LinearSVC, X_test: np.ndarray, y_test: np.ndarray, config: dict = None
+    model: LinearSVC, X_test: np.ndarray, y_test: np.ndarray, config: dict
 ) -> float:
     loss = 0
     accuracy = 0
@@ -69,11 +67,11 @@ def evaluate(
 ######################################
 
 def _set_initial_params(model: LinearSVC, model_config: dict):
-    print(model_config)
     n_classes = model_config.get("n_classes", 2)
     n_features = model_config.get("n_features", 13)
-    model.classes_ = np.array([i for i in range(n_classes)])
 
+    model.classes_ = np.array([i for i in range(n_classes)])
     model.coef_ = np.zeros((n_classes, n_features))
-    if model.fit_intercept == True:
+
+    if model.fit_intercept is True:
         model.intercept_ = np.zeros((n_classes,))

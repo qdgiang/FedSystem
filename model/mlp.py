@@ -5,7 +5,6 @@ from torch.nn.init import xavier_uniform_
 from collections import OrderedDict
 
 class MLP(Module):
-    # define model elements
     def __init__(self, n_inputs):
         super(MLP, self).__init__()
         self.hidden1 = Linear(n_inputs, 10)
@@ -18,7 +17,6 @@ class MLP(Module):
         xavier_uniform_(self.hidden3.weight)
         self.act3 = Sigmoid()
  
-    # forward propagate input
     def forward(self, X):
         X = self.hidden1(X)
         X = self.act1(X)
@@ -30,21 +28,17 @@ class MLP(Module):
     
 
 def init_model(model_config: dict = None) -> MLP:
-    print("model_config: ", model_config)
     return MLP(model_config["n_features"])
 
 def get_parameters(model: MLP) -> list:
-    """Get model parameters as a list of NumPy ndarrays."""
     return [val.cpu().numpy() for _, val in model.state_dict().items()]
 
 def set_parameters(model: MLP, parameters: list) -> None:
-    """Set model parameters from a list of NumPy ndarrays."""
     params_dict = zip(model.state_dict().keys(), parameters)
     state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
     model.load_state_dict(state_dict, strict=True)
 
 def fit(model: MLP, X_train, y_train, model_config: dict = None):
-    """Train the network on the training set."""
     criterion = torch.nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     model.train()
@@ -62,7 +56,7 @@ def fit(model: MLP, X_train, y_train, model_config: dict = None):
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-            # Metrics
+
             epoch_loss += loss
             total += labels.size(0)
             correct += (outputs == labels).sum().item()
@@ -71,7 +65,6 @@ def fit(model: MLP, X_train, y_train, model_config: dict = None):
     return get_parameters(model), len(X_train), {"accuracy": correct / total}
 
 def evaluate(model: MLP, X_test: torch.Tensor, y_test: torch.Tensor, model_config: dict = None):
-    """Test the network"""
     criterion = torch.nn.BCELoss()
     correct, total, loss = 0, 0, 0.0
     model.eval()
@@ -90,7 +83,6 @@ def evaluate(model: MLP, X_test: torch.Tensor, y_test: torch.Tensor, model_confi
         if verbose:
             print(f"Test loss = {loss / total}, accuracy = {correct / total}")
     loss = loss / total
-    # turn loss to float
     loss = loss.item()
     return loss, len(X_test), {"accuracy": correct / total}
 

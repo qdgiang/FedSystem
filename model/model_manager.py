@@ -2,19 +2,14 @@ import importlib
 import yaml
 
 class ModelManager:
-    def __init__(self, 
-                 model_name: str,
-    ) -> None:
-        assert model_name in ["logreg", "cnn", "svm", "mlp"]
-        with open("../model/config/" + model_name + ".yaml", "r") as f:
-            self.model_config = yaml.safe_load(f)#.get(model_name)
+    def __init__(self, model_name: str) -> None:
+        assert model_name in ["logistic", "cnn", "svm", "mlp"]
+        config_location = "config/" + model_name + ".yaml"
+        with open(config_location, "r") as f:
+            self.model_config = yaml.safe_load(f)
         self.model_name = model_name
-        self.model_source = importlib.import_module(
-            name= "."+ self.model_name, 
-            package= "model"
-        )
+        self.model_source = importlib.import_module(name=self.model_name)
         self.model = self.model_source.init_model(self.model_config)
-
     
     def get_params(self):
         return self.model_source.get_parameters(self.model)
@@ -32,5 +27,4 @@ class ModelManager:
         return self.model_source.evaluate(self.model, X_test, y_test, self.model_config)
 
 if __name__ == "__main__":
-    model_manager = ModelManager("logreg")
-    print(model_manager.get_params())
+    model_manager = ModelManager("cnn")

@@ -1,0 +1,14 @@
+client:
+  server_address: 127.0.0.1:8008
+  test: False
+
+server:
+  server_address: 127.0.0.1:8008
+  strategy: fedavg
+
+
+common:
+  model: svm
+  data: tcga
+  split: True
+  cuda: False

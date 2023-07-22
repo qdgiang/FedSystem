@@ -2,11 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from torchvision.datasets import CIFAR10
 from torchvision.transforms import Compose, Normalize, ToTensor
 from collections import OrderedDict
-
-
 
 class Net(nn.Module):
     def __init__(self) -> None:
@@ -27,24 +24,20 @@ class Net(nn.Module):
         return self.fc3(x)
 
 
-def init_model(model_config: dict = None) -> Net:
-    print("model_config: ", model_config)
+def init_model(model_config: dict) -> Net:
     return Net()
 
 def get_parameters(model: Net) -> list:
-    """Get model parameters as a list of NumPy ndarrays."""
     return [val.cpu().numpy() for _, val in model.state_dict().items()]
 
 def set_parameters(model: Net, parameters: list) -> None:
-    """Set model parameters from a list of NumPy ndarrays."""
     params_dict = zip(model.state_dict().keys(), parameters)
     state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
     model.load_state_dict(state_dict, strict=True)
 
 def fit(
-    model: Net, X_train: DataLoader, y_train: DataLoader, model_config: dict = None
+    model: Net, X_train: DataLoader, y_train: DataLoader, model_config: dict
 ):
-    """Train the network on the training set."""
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
     model.train()
@@ -61,7 +54,7 @@ def fit(
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-            # Metrics
+
             epoch_loss += loss
             total += labels.size(0)
             correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
@@ -72,9 +65,8 @@ def fit(
         return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc}
 
 def evaluate(
-    model: Net, X_test: DataLoader, y_test: DataLoader, model_config: dict = None
+    model: Net, X_test: DataLoader, y_test: DataLoader, model_config: dict
 ):
-    """Test the network"""
     criterion = torch.nn.CrossEntropyLoss()
     correct, total, loss = 0, 0, 0.0
     model.eval()

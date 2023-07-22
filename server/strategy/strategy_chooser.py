@@ -1,21 +1,18 @@
 import importlib
+import os
+import sys
+sys.path.append((os.path.dirname(__file__)))
 
 def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
     print("metrics: ", metrics)
-    # Multiply accuracy of each client by number of examples used
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
     print("accuracies: ", accuracies)
-    # Aggregate and return custom metric (weighted average)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
-def strategy_chooser(strategy_name: str, strategy_config: dict = None):
-    strategy_name = "." + strategy_name
-    print("Hmm")
-    print(strategy_name)
-    strategy_file = importlib.import_module(strategy_name, package="strategy")
+def strategy_chooser(strategy_name: str, strategy_config: dict):
+    strategy_file = importlib.import_module(strategy_name)
     if strategy_name == ".fedavg":
-        print("Noice")
         return strategy_file.BaseFedAvg(
             fraction_fit=0.05,
             min_available_clients=6,
@@ -26,4 +23,8 @@ def strategy_chooser(strategy_name: str, strategy_config: dict = None):
             evaluate_metrics_aggregation_fn=weighted_average,
             )
     else:
+        print("Strategy not found")
         return None
+
+if __name__ == "__main__":
+    strategy_chooser("fedavg", {})

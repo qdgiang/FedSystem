@@ -1,4 +1,0 @@
-model: svm
-data: tcga
-split: True
-cuda: False

@@ -14,18 +14,18 @@ class MyClient(fl.client.NumPyClient):
         self.model_manager = model_manager
      
         
-    def set_parameters(self, parameters, config: dict = None):
+    def set_parameters(self, parameters, config: dict):
         self.model_manager.set_params(parameters)
 
-    def get_parameters(self, config: dict = None):
+    def get_parameters(self, config: dict):
         return self.model_manager.get_params()
     
-    def fit(self, parameters, config: dict = None):
-        self.set_parameters(parameters)
+    def fit(self, parameters, config: dict):
+        self.set_parameters(parameters, config)
         return self.model_manager.fit_model(self.data_manager.get_training_data(), self.data_manager.get_training_label())
 
-    def evaluate(self, parameters, config: dict = None):
-        self.set_parameters(parameters)
+    def evaluate(self, parameters, config: dict):
+        self.set_parameters(parameters, config)
         return self.model_manager.evaluate_model(self.data_manager.get_eval_data(), self.data_manager.get_eval_label())
         
 
