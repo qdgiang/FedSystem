@@ -3,7 +3,7 @@ import flwr as fl
 from strategy.strategy_chooser import strategy_chooser
 from dataclasses import dataclass
 import yaml
-from flwr.server import ServerConfig
+from utils.app import ServerConfig, start_server
 
 @dataclass
 class MyConfig:
@@ -18,7 +18,7 @@ def main():
         server_config = yaml.safe_load(f).get("server")
     print("*" * 20)
     print("Server_config: ", server_config)
-    fl.server.start_server(
+    start_server(
         server_address=server_config["server_address"],
         strategy=strategy_chooser(server_config["strategy"], {}),
         config=ServerConfig(num_rounds=30)
