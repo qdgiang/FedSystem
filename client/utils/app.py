@@ -27,14 +27,14 @@ from flwr.common.typing import (
     Status,
 )
 
-from .client import Client
-from .grpc_client.connection import grpc_connection
-from .message_handler.message_handler import handle
-from .numpy_client import NumPyClient
-from .numpy_client import has_evaluate as numpyclient_has_evaluate
-from .numpy_client import has_fit as numpyclient_has_fit
-from .numpy_client import has_get_parameters as numpyclient_has_get_parameters
-from .numpy_client import has_get_properties as numpyclient_has_get_properties
+from flwr.client.client import Client
+from flwr.client.grpc_client.connection import grpc_connection
+from flwr.client.message_handler.message_handler import handle
+from flwr.client.numpy_client import NumPyClient
+from flwr.client.numpy_client import has_evaluate as numpyclient_has_evaluate
+from flwr.client.numpy_client import has_fit as numpyclient_has_fit
+from flwr.client.numpy_client import has_get_parameters as numpyclient_has_get_parameters
+from flwr.client.numpy_client import has_get_properties as numpyclient_has_get_properties
 
 EXCEPTION_MESSAGE_WRONG_RETURN_TYPE_FIT = """
 NumPyClient.fit did not return a tuple with 3 elements.
@@ -133,7 +133,7 @@ def start_client(
     # Use either gRPC bidirectional streaming or REST request/response
     if rest:
         try:
-            from .rest_client.connection import http_request_response
+            from flwr.client.rest_client.connection import http_request_response
         except ModuleNotFoundError:
             sys.exit(MISSING_EXTRA_REST)
         if server_address[:4] != "http":

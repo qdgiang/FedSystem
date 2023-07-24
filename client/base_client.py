@@ -1,8 +1,10 @@
 import sys
-sys.path.append("..")
+import os
+sys.path.append(os.path.dirname(__file__))
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
-from utils.numpy_client import NumPyClient
+from flwr.client import NumPyClient
+
 class MyClient(NumPyClient):
     def __init__(
         self,

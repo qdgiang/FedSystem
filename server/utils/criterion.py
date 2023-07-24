@@ -1,12 +1,10 @@
-from abc import ABC, abstractmethod
+from flwr.server.client_proxy import ClientProxy
+from flwr.server.criterion import Criterion
 
-from .client_proxy import ClientProxy
-
-
-class Criterion(ABC):
+class MyCriterion(Criterion):
     """Abstract class which allows subclasses to implement criterion
     sampling."""
 
-    @abstractmethod
     def select(self, client: ClientProxy) -> bool:
         """Decide whether a client should be eligible for sampling or not."""
+        return True

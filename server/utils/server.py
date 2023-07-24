@@ -2,8 +2,9 @@ import concurrent.futures
 import timeit
 from logging import DEBUG, INFO
 from typing import Dict, List, Optional, Tuple, Union
-
-from flwr.common import (
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from flwr.common.typing import (
     Code,
     DisconnectRes,
     EvaluateIns,
@@ -14,12 +15,15 @@ from flwr.common import (
     ReconnectIns,
     Scalar,
 )
+
 from flwr.common.logger import log
 from flwr.common.typing import GetParametersIns
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.history import History
-from flwr.server.strategy import FedAvg, Strategy
+from flwr.server.strategy import Strategy
+
+from strategy import FedAvg
 
 FitResultsAndFailures = Tuple[
     List[Tuple[ClientProxy, FitRes]],
