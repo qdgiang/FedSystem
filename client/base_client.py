@@ -1,10 +1,9 @@
-import flwr as fl
 import sys
 sys.path.append("..")
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
-
-class MyClient(fl.client.NumPyClient):
+from utils.numpy_client import NumPyClient
+class MyClient(NumPyClient):
     def __init__(
         self,
         data_manager: DataManager,

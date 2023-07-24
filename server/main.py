@@ -1,5 +1,4 @@
 from typing import Optional
-import flwr as fl
 from strategy.strategy_chooser import strategy_chooser
 from dataclasses import dataclass
 import yaml

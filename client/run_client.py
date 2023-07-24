@@ -1,13 +1,12 @@
-import flwr as fl
 import sys
 import os
 sys.path.append(os.path.dirname((os.path.dirname(__file__))))
 import argparse
-import torch
 import yaml
 from base_client import MyClient
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
+from utils.app import start_numpy_client
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Flower")
@@ -40,7 +39,7 @@ def main() -> None:
     
     client = MyClient(data_manager, model_manager)
     if not client_config["test"]:
-        fl.client.start_numpy_client(server_address=client_config["server_address"], client=client)
+        start_numpy_client(server_address=client_config["server_address"], client=client)
     
 if __name__ == "__main__":
     main()
