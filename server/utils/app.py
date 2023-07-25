@@ -16,7 +16,7 @@ from flwr.server.strategy import Strategy
 
 from .history import History
 from .server import Server
-from strategy import FedAvg
+from strategy import MyFedAvg
 
 ADDRESS_DRIVER_API = "0.0.0.0:9091"
 ADDRESS_FLEET_API_GRPC_RERE = "0.0.0.0:9092"
@@ -27,7 +27,7 @@ DATABASE = ":flwr-in-memory-state:"
 
 
 @dataclass
-class ServerConfig:
+class MyServerConfig:
     """Flower server config.
 
     All attributes have default values which allows users to configure
@@ -42,7 +42,7 @@ def start_server(  # pylint: disable=too-many-arguments,too-many-locals
     *,
     server_address: str = ADDRESS_FLEET_API_GRPC_BIDI,
     server: Optional[Server] = None,
-    config: Optional[ServerConfig] = None,
+    config: Optional[MyServerConfig] = None,
     strategy: Optional[Strategy] = None,
     client_manager: Optional[ClientManager] = None,
     grpc_max_message_length: int = GRPC_MAX_MESSAGE_LENGTH,
@@ -159,30 +159,30 @@ def start_server(  # pylint: disable=too-many-arguments,too-many-locals
 
 def _init_defaults(
     server: Optional[Server],
-    config: Optional[ServerConfig],
+    config: Optional[MyServerConfig],
     strategy: Optional[Strategy],
     client_manager: Optional[ClientManager],
-) -> Tuple[Server, ServerConfig]:
+) -> Tuple[Server, MyServerConfig]:
     # Create server instance if none was given
     if server is None:
         if client_manager is None:
             client_manager = SimpleClientManager()
         if strategy is None:
-            strategy = FedAvg()
+            strategy = MyFedAvg()
         server = Server(client_manager=client_manager, strategy=strategy)
     elif strategy is not None:
         log(WARN, "Both server and strategy were provided, ignoring strategy")
 
     # Set default config values
     if config is None:
-        config = ServerConfig()
+        config = MyServerConfig()
 
     return server, config
 
 
 def _fl(
     server: Server,
-    config: ServerConfig,
+    config: MyServerConfig,
 ) -> History:
     # Fit model
     hist = server.fit(num_rounds=config.num_rounds, timeout=config.round_timeout)

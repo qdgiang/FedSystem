@@ -1,7 +1,4 @@
 import importlib
-import sys
-import os
-sys.path.append((os.path.dirname(__file__)))
 
 class DataManager:
     def __init__(self, node_type: str, config: dict) -> None:
@@ -12,11 +9,12 @@ class DataManager:
         self.data_config = config
         self.cid = config["cid"] if config is not None else 0
         print("Client ID: ", self.cid)
-        data_source = importlib.import_module(self.data_name)
+        data_source = importlib.import_module(f"data.{self.data_name}")
         if node_type == "client":
             self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.cid, self.data_config)
         else:
             (self.X_test, self.y_test) = data_source.get_server_data()
+        print("Data imported sucessfully. Data name:", self.data_name)
 
     def get_training_data(self):
         return self.X_train

@@ -22,8 +22,8 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.history import History
 from flwr.server.strategy import Strategy
-
-from strategy import FedAvg
+from flwr.server.server import Server
+from strategy import MyFedAvg
 
 FitResultsAndFailures = Tuple[
     List[Tuple[ClientProxy, FitRes]],
@@ -39,7 +39,7 @@ ReconnectResultsAndFailures = Tuple[
 ]
 
 
-class Server:
+class MyServer(Server):
     """Flower server."""
 
     def __init__(
@@ -49,7 +49,7 @@ class Server:
         self.parameters: Parameters = Parameters(
             tensors=[], tensor_type="numpy.ndarray"
         )
-        self.strategy: Strategy = strategy if strategy is not None else FedAvg()
+        self.strategy: Strategy = strategy if strategy is not None else MyFedAvg()
         self.max_workers: Optional[int] = None
 
     def set_max_workers(self, max_workers: Optional[int]) -> None:

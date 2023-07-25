@@ -1,8 +1,8 @@
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
-from data.data_manager import DataManager
-from model.model_manager import ModelManager
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from data import DataManager
+from model import ModelManager
 from flwr.client import NumPyClient
 
 class MyClient(NumPyClient):

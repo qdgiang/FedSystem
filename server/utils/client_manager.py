@@ -8,6 +8,11 @@ from flwr.server.client_proxy import ClientProxy
 from flwr.server.criterion import Criterion
 from flwr.server.client_manager import ClientManager
 
+class MyClientManager(ClientManager):
+    def __init__(self) -> None:
+        self.clients: Dict[str, ClientProxy] = {}
+        self._cv = threading.Condition()
+
 class SimpleClientManager(ClientManager):
     """Provides a pool of available clients."""
 

@@ -1,11 +1,9 @@
-import sys
-import os
-sys.path.append(os.path.dirname((os.path.dirname(__file__))))
 import argparse
 import yaml
+
 from base_client import MyClient
-from data.data_manager import DataManager
-from model.model_manager import ModelManager
+from data import DataManager
+from model import ModelManager
 from utils.app import start_numpy_client
 
 def main() -> None:

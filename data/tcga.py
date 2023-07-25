@@ -1,11 +1,10 @@
 from flamby.datasets.fed_tcga_brca import FedTcgaBrca 
-#from .FLamby.flamby.datasets.fed_heart_disease import FedHeartDisease
 from torch.utils.data import DataLoader as dl
 import numpy as np
 
 
 
-def _get_np(center_id: int, train: bool, config: dict = None):
+def _get_np(center_id: int, train: bool, config: dict):
     center = FedTcgaBrca(center=center_id, train=train)
     if config["split"] == True:
         c0_iter = iter(dl(center, batch_size=None, num_workers=0))
@@ -26,17 +25,12 @@ def _get_np(center_id: int, train: bool, config: dict = None):
     return X_train, y_train
 
 
-def get_client_data(center_id: int, config: dict = None):
+def get_client_data(center_id: int, config: dict):
     X_train, y_train = _get_np(center_id, train = True, config = config)
-    print(X_train.shape)
-    print(y_train.shape)
-    print(y_train)
     X_val, y_val = _get_np(center_id, train = False, config = config)
-    print(X_val.shape)
-    print(y_val.shape)
     return X_train, y_train, X_val, y_val
 
-def get_server_data(config: dict = None):
+def get_server_data(config: dict):
     return _get_np(3, train = False, config = config)
 
 if __name__ == "__main__":

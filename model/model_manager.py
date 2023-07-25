@@ -1,15 +1,17 @@
 import importlib
 import yaml
+import os
 
 class ModelManager:
     def __init__(self, model_name: str) -> None:
         assert model_name in ["logistic", "cnn", "svm", "mlp"]
-        config_location = "config/" + model_name + ".yaml"
+        config_location = f"{os.path.dirname(__file__)}/config/{model_name}.yaml"
         with open(config_location, "r") as f:
             self.model_config = yaml.safe_load(f)
         self.model_name = model_name
-        self.model_source = importlib.import_module(name=self.model_name)
+        self.model_source = importlib.import_module(name=f"model.{self.model_name}")
         self.model = self.model_source.init_model(self.model_config)
+        print(f"Model initialized successfully! Model type: {type(self.model)}")
     
     def get_params(self):
         return self.model_source.get_parameters(self.model)

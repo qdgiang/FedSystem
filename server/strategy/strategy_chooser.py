@@ -12,8 +12,9 @@ def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
 
 def strategy_chooser(strategy_name: str, strategy_config: dict):
     strategy_file = importlib.import_module(strategy_name)
-    if strategy_name == ".fedavg":
-        return strategy_file.BaseFedAvg(
+    if strategy_name == "fedavg":
+        print("Strategy: FedAvg")
+        return strategy_file.MyFedAvg(
             fraction_fit=0.05,
             min_available_clients=6,
             min_fit_clients=6,
