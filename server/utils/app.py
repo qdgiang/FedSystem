@@ -3,19 +3,19 @@ from dataclasses import dataclass
 from logging import INFO, WARN
 from typing import Optional, Tuple
 import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from flwr.common import GRPC_MAX_MESSAGE_LENGTH, EventType, event
 from flwr.common.address import parse_address
-from flwr.common.logger import log
+from common.logger import log
 from flwr.server.client_manager import ClientManager, SimpleClientManager
 from flwr.server.grpc_server.grpc_server import (
     start_grpc_server,
 )
 from flwr.server.strategy import Strategy
 
-from .history import History
-from .server import Server
+from .history import MyHistory
+from .server import MyServer
 from strategy import MyFedAvg
 
 ADDRESS_DRIVER_API = "0.0.0.0:9091"
@@ -41,13 +41,13 @@ class MyServerConfig:
 def start_server(  # pylint: disable=too-many-arguments,too-many-locals
     *,
     server_address: str = ADDRESS_FLEET_API_GRPC_BIDI,
-    server: Optional[Server] = None,
+    server: Optional[MyServer] = None,
     config: Optional[MyServerConfig] = None,
     strategy: Optional[Strategy] = None,
     client_manager: Optional[ClientManager] = None,
     grpc_max_message_length: int = GRPC_MAX_MESSAGE_LENGTH,
     certificates: Optional[Tuple[bytes, bytes, bytes]] = None,
-) -> History:
+) -> MyHistory:
     """Start a Flower server using the gRPC transport layer.
 
     Parameters
@@ -158,18 +158,18 @@ def start_server(  # pylint: disable=too-many-arguments,too-many-locals
 
 
 def _init_defaults(
-    server: Optional[Server],
+    server: Optional[MyServer],
     config: Optional[MyServerConfig],
     strategy: Optional[Strategy],
     client_manager: Optional[ClientManager],
-) -> Tuple[Server, MyServerConfig]:
+) -> Tuple[MyServer, MyServerConfig]:
     # Create server instance if none was given
     if server is None:
         if client_manager is None:
             client_manager = SimpleClientManager()
         if strategy is None:
             strategy = MyFedAvg()
-        server = Server(client_manager=client_manager, strategy=strategy)
+        server = MyServer(client_manager=client_manager, strategy=strategy)
     elif strategy is not None:
         log(WARN, "Both server and strategy were provided, ignoring strategy")
 
@@ -181,9 +181,9 @@ def _init_defaults(
 
 
 def _fl(
-    server: Server,
+    server: MyServer,
     config: MyServerConfig,
-) -> History:
+) -> MyHistory:
     # Fit model
     hist = server.fit(num_rounds=config.num_rounds, timeout=config.round_timeout)
     log(INFO, "app_fit: losses_distributed %s", str(hist.losses_distributed))

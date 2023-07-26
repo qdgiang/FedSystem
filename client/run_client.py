@@ -1,5 +1,6 @@
 import argparse
 import yaml
+import os
 
 from base_client import MyClient
 from data import DataManager
@@ -16,10 +17,11 @@ def main() -> None:
         help="Specify the client ID",
     )
     args = parser.parse_args()
-
-    with open("../config.yaml", "r") as f:
+    
+    dir = os.path.dirname(os.path.dirname(__file__))
+    with open(f"{dir}/config.yaml", "r") as f:
         client_config = yaml.safe_load(f).get("client")
-    with open("../config.yaml", "r") as f:
+    with open(f"{dir}/config.yaml", "r") as f:
         common_config = yaml.safe_load(f).get("common")
     data_config = {
         "cid": args.cid,

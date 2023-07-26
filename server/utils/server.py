@@ -16,11 +16,11 @@ from flwr.common.typing import (
     Scalar,
 )
 
-from flwr.common.logger import log
+from common.logger import log
 from flwr.common.typing import GetParametersIns
-from flwr.server.client_manager import ClientManager
+from .client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
-from flwr.server.history import History
+from .history import MyHistory
 from flwr.server.strategy import Strategy
 from flwr.server.server import Server
 from strategy import MyFedAvg
@@ -65,12 +65,12 @@ class MyServer(Server):
         return self._client_manager
 
     # pylint: disable=too-many-locals
-    def fit(self, num_rounds: int, timeout: Optional[float]) -> History:
+    def fit(self, num_rounds: int, timeout: Optional[float]) -> MyHistory:
         """Run federated averaging for a number of rounds."""
-        history = History()
+        history = MyHistory()
 
         # Initialize parameters
-        log(INFO, "Initializing global parameters")
+        #log(INFO, "Initializing global parameters")
         self.parameters = self._get_initial_parameters(timeout=timeout)
         log(INFO, "Evaluating initial parameters")
         res = self.strategy.evaluate(0, parameters=self.parameters)

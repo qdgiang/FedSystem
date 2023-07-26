@@ -3,7 +3,7 @@ import threading
 from logging import INFO
 from typing import Dict, List, Optional
 
-from flwr.common.logger import log
+from common.logger import log
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.criterion import Criterion
 from flwr.server.client_manager import ClientManager
