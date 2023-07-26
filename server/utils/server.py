@@ -86,6 +86,7 @@ class MyServer(Server):
 
         # Run federated learning for num_rounds
         log(INFO, "FL starting")
+        print("Hehllo")
         start_time = timeit.default_timer()
 
         for current_round in range(1, num_rounds + 1):

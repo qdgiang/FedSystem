@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from flwr.common import GRPC_MAX_MESSAGE_LENGTH, EventType, event
 from flwr.common.address import parse_address
 from common.logger import log
-from flwr.server.client_manager import ClientManager, SimpleClientManager
+from .client_manager import ClientManager, MyClientManager
 from flwr.server.grpc_server.grpc_server import (
     start_grpc_server,
 )
@@ -166,7 +166,7 @@ def _init_defaults(
     # Create server instance if none was given
     if server is None:
         if client_manager is None:
-            client_manager = SimpleClientManager()
+            client_manager = MyClientManager()
         if strategy is None:
             strategy = MyFedAvg()
         server = MyServer(client_manager=client_manager, strategy=strategy)

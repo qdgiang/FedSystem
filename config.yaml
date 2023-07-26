@@ -5,7 +5,7 @@ client:
 server:
   server_address: 127.0.0.1:8008
   strategy: fedavg
-  num_rounds: 10
+  num_rounds: 1
 
 
 common:

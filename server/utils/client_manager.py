@@ -9,11 +9,6 @@ from flwr.server.criterion import Criterion
 from flwr.server.client_manager import ClientManager
 
 class MyClientManager(ClientManager):
-    def __init__(self) -> None:
-        self.clients: Dict[str, ClientProxy] = {}
-        self._cv = threading.Condition()
-
-class SimpleClientManager(ClientManager):
     """Provides a pool of available clients."""
 
     def __init__(self) -> None:
@@ -104,6 +99,7 @@ class SimpleClientManager(ClientManager):
     ) -> List[ClientProxy]:
         """Sample a number of Flower ClientProxy instances."""
         # Block until at least num_clients are connected.
+        print(self.all())
         if min_num_clients is None:
             min_num_clients = num_clients
         self.wait_for(min_num_clients)

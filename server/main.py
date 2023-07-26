@@ -15,7 +15,7 @@ def main():
     start_server(
         server_address=yaml_server_config["server_address"],
         strategy=strategy_chooser(yaml_server_config["strategy"], {}),
-        config=MyServerConfig(num_rounds=30)
+        config=MyServerConfig(num_rounds=yaml_server_config["num_rounds"])
     )
 
 if __name__ == "__main__":

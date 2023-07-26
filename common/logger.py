@@ -17,6 +17,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 console_handler.setFormatter(DEFAULT_FORMATTER)
 FLOWER_LOGGER.addHandler(console_handler)
+FLOWER_LOGGER.propagate = False
 
 
 class CustomHTTPHandler(HTTPHandler):
@@ -65,6 +66,7 @@ def configure(
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(formatter)
         FLOWER_LOGGER.addHandler(file_handler)
+        FLOWER_LOGGER.propagate = False
 
     if host:
         # Create http handler which logs even debug messages
@@ -77,6 +79,7 @@ def configure(
         http_handler.setLevel(logging.DEBUG)
         # Override mapLogRecords as setFormatter has no effect on what is send via http
         FLOWER_LOGGER.addHandler(http_handler)
+        FLOWER_LOGGER.propagate = False
 
 
 logger = logging.getLogger(LOGGER_NAME)  # pylint: disable=invalid-name
