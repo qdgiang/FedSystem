@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 from torchvision.datasets import CIFAR10
 from torch.utils.data import DataLoader, random_split
 import torch
-
+import os
 BATCH_SIZE = 32
 
 
@@ -11,7 +11,7 @@ def load_cifar(NUM_CLIENTS = 5):
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
-    trainset = CIFAR10("../data/dataset/cifar", train=True, download=True, transform=transform)
+    trainset = CIFAR10(f"{os.path.dirname(__file__)}/dataset/cifar", train=True, download=True, transform=transform)
 
     # Split training set into partitions
     partition_size = len(trainset) // NUM_CLIENTS
@@ -20,7 +20,7 @@ def load_cifar(NUM_CLIENTS = 5):
 
     return datasets
 
-def get_client_data(partition_id: int, config: dict = None):
+def get_client_data(partition_id: int, config: dict):
     datasets = load_cifar()
     trainset = datasets[partition_id]
     len_val = len(trainset) // 10  # 10% validation set
@@ -31,7 +31,7 @@ def get_client_data(partition_id: int, config: dict = None):
     valloader = DataLoader(ds_val, batch_size=BATCH_SIZE)
     return trainloader, None, valloader, None
 
-def get_server_data(config: dict = None):
+def get_server_data(config: dict):
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )

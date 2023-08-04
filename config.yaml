@@ -5,11 +5,11 @@ client:
 server:
   server_address: 127.0.0.1:8008
   strategy: fedavg
-  num_rounds: 1
+  num_rounds: 30
 
 
 common:
-  model: svm
-  data: tcga
+  model: cnn
+  data: mnist
   split: True
   cuda: False

@@ -4,11 +4,13 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, Normalize, ToTensor
 from collections import OrderedDict
+import numpy
 
+"""
 class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv1 = nn.Conv2d(1, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
@@ -22,6 +24,29 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc3(x)
+"""
+# define a simple CNN that accpet MNIST images, input size is torch.Size([1, 784]), output size is torch.Size([1, 10])
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        # input size is torch.Size([1, 784])
+        self.fc1 = nn.Linear(784, 512)
+        self.fc2 = nn.Linear(512, 256)
+        # output size is torch.Size([1, 10])
+        self.fc3 = nn.Linear(256, 10)
+
+    def forward(self, x):
+        # input size is torch.Size([1, 784])
+        x = x.view(-1, 784)
+        # hidden size is torch.Size([1, 512])
+        x = F.relu(self.fc1(x))
+        # hidden size is torch.Size([1, 256])
+        x = F.relu(self.fc2(x))
+        # output size is torch.Size([1, 10])
+        x = self.fc3(x)
+        return x
+    
+
 
 
 def init_model(model_config: dict) -> Net:
@@ -43,11 +68,17 @@ def fit(
     model.train()
     epochs = model_config["epochs"]
     verbose = model_config["verbose"]
-    DEVICE = torch.device("cpu") if model_config["device"] == "cpu" else torch.device("cuda:0")
+    DEVICE = torch.device("cpu") #if model_config["device"] == "cpu" else torch.device("cuda:0")
     
     for epoch in range(epochs):
         correct, total, epoch_loss = 0, 0, 0.0
-        for images, labels in X_train:
+        for images, labels in zip(X_train, y_train):
+            #images, labels = images.to(DEVICE), labels.to(DEVICE)
+            # convert from numpy arrays to PyTorch tensors
+            images = torch.from_numpy(images).float()
+            # labels is numpy.float 32, convert it to pytorch tensor
+            labels = numpy.array(labels).astype(numpy.int64)
+            labels = torch.from_numpy(labels)
             images, labels = images.to(DEVICE), labels.to(DEVICE)
             optimizer.zero_grad()
             outputs = model(images)
@@ -72,10 +103,10 @@ def evaluate(
     model.eval()
     epochs = model_config["epochs"]
     verbose = model_config["verbose"]
-    DEVICE = torch.device("cpu") if model_config["cuda"] == False else torch.device("cuda:0")
+    DEVICE = torch.device("cpu") #if model_config["cuda"] == False else torch.device("cuda:0")
 
     with torch.no_grad():
-        for images, labels in X_test:
+        for images, labels in X_test, y_test:
             images, labels = images.to(DEVICE), labels.to(DEVICE)
             outputs = model(images)
             loss += criterion(outputs, labels).item()

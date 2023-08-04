@@ -4,7 +4,7 @@ import numpy as np
 
 
 
-def _get_np(center_id: int, train: bool, config: dict = None):
+def _get_np(center_id: int, train: bool, config: dict):
     center = FedHeartDisease(center=center_id, train=train)
     if config["split"] == True:
         c0_iter = iter(dl(center, batch_size=None, num_workers=0))
@@ -23,15 +23,15 @@ def _get_np(center_id: int, train: bool, config: dict = None):
     return X_train, y_train
 
 
-def get_client_data(center_id: int, config: dict = None):
+def get_client_data(center_id: int, config: dict):
     X_train, y_train = _get_np(center_id, train = True, config = config)
     print(len(X_train))
     X_val, y_val = _get_np(center_id, train = False, config = config)
     print(len(X_val))
     return X_train, y_train, X_val, y_val
 
-def get_server_data(config: dict = None):
-    return _get_np(3, train = False, config = config)
+def get_server_data(config: dict):
+    return _get_np(1, train = False, config = config)
 
 if __name__ == "__main__":
     config = {"split": True}

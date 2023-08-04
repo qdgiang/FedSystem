@@ -1,7 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from typing import Tuple, Union, List
 import numpy as np
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, precision_score, recall_score
 import warnings
 XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
@@ -52,6 +52,10 @@ def evaluate(
     loss = log_loss(y_test, model.predict_proba(X_test))
     accuracy = model.score(X_test, y_test)
     print(f"Loss: {loss}, Accuracy: {accuracy}")
+    # get the precision and recall
+    precision = precision_score(y_test, model.predict(X_test), average='weighted')
+    recall = recall_score(y_test, model.predict(X_test), average='weighted')
+
     return loss, len(X_test), {"accuracy": accuracy}
 
 ######################################

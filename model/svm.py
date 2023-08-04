@@ -1,7 +1,7 @@
 from sklearn.svm import LinearSVC
 from typing import Tuple, Union, List
 import numpy as np
-from sklearn.metrics import log_loss
+from sklearn.metrics import log_loss, precision_score, recall_score
 import warnings
 XY = Tuple[np.ndarray, np.ndarray]
 LogRegParams = Union[XY, Tuple[np.ndarray]]
@@ -62,7 +62,11 @@ def evaluate(
     loss /= len(X_test)
     accuracy /= len(X_test)
     print(f"Loss: {loss}, Accuracy: {accuracy}")
-    return loss, len(X_test), {"accuracy": accuracy}
+    # get the precision and recall
+    precision = precision_score(y_test, model.predict(X_test))
+    recall = recall_score(y_test, model.predict(X_test))
+
+    return loss, len(X_test), {"accuracy": precision}
 
 ######################################
 
