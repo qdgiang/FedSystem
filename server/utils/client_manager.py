@@ -3,7 +3,7 @@ import threading
 from logging import INFO
 from typing import Dict, List, Optional
 
-from common.logger import log
+from common.logger import FED_LOGGER
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.criterion import Criterion
 from flwr.server.client_manager import ClientManager
@@ -111,7 +111,7 @@ class MyClientManager(ClientManager):
             ]
 
         if num_clients > len(available_cids):
-            log(
+            FED_LOGGER.log(
                 INFO,
                 "Sampling failed: number of available clients"
                 " (%s) is less than number of requested clients (%s).",

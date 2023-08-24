@@ -1,5 +1,5 @@
-n_features: 39
-n_classes: 2
+n_features: 784
+n_classes: 10
 epochs: 1
 verbose: True
 batch_size: 64

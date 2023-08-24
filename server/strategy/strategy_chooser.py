@@ -3,6 +3,7 @@ import os
 import sys
 sys.path.append((os.path.dirname(__file__)))
 
+from flwr.server.strategy import Strategy
 def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
     print("metrics: ", metrics)
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
@@ -10,7 +11,7 @@ def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
     print("accuracies: ", accuracies)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
-def strategy_chooser(strategy_name: str, strategy_config: dict):
+def strategy_chooser(strategy_name: str, strategy_config: dict) -> Strategy:
     strategy_file = importlib.import_module(strategy_name)
     if strategy_name == "fedavg":
         print("Strategy: FedAvg")

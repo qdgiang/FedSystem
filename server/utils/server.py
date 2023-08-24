@@ -16,7 +16,7 @@ from flwr.common.typing import (
     Scalar,
 )
 
-from common.logger import log
+from common.logger import FED_LOGGER
 from flwr.common.typing import GetParametersIns
 from .client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
@@ -43,13 +43,13 @@ class MyServer(Server):
     """Flower server."""
 
     def __init__(
-        self, *, client_manager: ClientManager, strategy: Optional[Strategy] = None
+        self, *, client_manager: ClientManager, strategy: Strategy
     ) -> None:
         self._client_manager: ClientManager = client_manager
         self.parameters: Parameters = Parameters(
             tensors=[], tensor_type="numpy.ndarray"
         )
-        self.strategy: Strategy = strategy if strategy is not None else MyFedAvg()
+        self.strategy = strategy #: Strategy = strategy if strategy is not None else MyFedAvg()
         self.max_workers: Optional[int] = None
 
     def set_max_workers(self, max_workers: Optional[int]) -> None:
@@ -70,12 +70,13 @@ class MyServer(Server):
         history = MyHistory()
 
         # Initialize parameters
-        #log(INFO, "Initializing global parameters")
+        FED_LOGGER.log(INFO, "Initializing global parameters")
         self.parameters = self._get_initial_parameters(timeout=timeout)
-        log(INFO, "Evaluating initial parameters")
+        #FED_LOGGER.debug("Initialized global parameters: %s", self.parameters)
+        FED_LOGGER.log(INFO, "Evaluating initial parameters")
         res = self.strategy.evaluate(0, parameters=self.parameters)
         if res is not None:
-            log(
+            FED_LOGGER.log(
                 INFO,
                 "initial parameters (loss, other metrics): %s, %s",
                 res[0],
@@ -85,7 +86,7 @@ class MyServer(Server):
             history.add_metrics_centralized(server_round=0, metrics=res[1])
 
         # Run federated learning for num_rounds
-        log(INFO, "FL starting")
+        FED_LOGGER.log(INFO, "FL starting")
         print("Hehllo")
         start_time = timeit.default_timer()
 
@@ -104,7 +105,7 @@ class MyServer(Server):
             res_cen = self.strategy.evaluate(current_round, parameters=self.parameters)
             if res_cen is not None:
                 loss_cen, metrics_cen = res_cen
-                log(
+                FED_LOGGER.log(
                     INFO,
                     "fit progress: (%s, %s, %s, %s)",
                     current_round,
@@ -132,7 +133,7 @@ class MyServer(Server):
         # Bookkeeping
         end_time = timeit.default_timer()
         elapsed = end_time - start_time
-        log(INFO, "FL finished in %s", elapsed)
+        FED_LOGGER.log(INFO, "FL finished in %s", elapsed)
         return history
 
     def evaluate_round(
@@ -151,9 +152,9 @@ class MyServer(Server):
             client_manager=self._client_manager,
         )
         if not client_instructions:
-            log(INFO, "evaluate_round %s: no clients selected, cancel", server_round)
+            FED_LOGGER.log(INFO, "evaluate_round %s: no clients selected, cancel", server_round)
             return None
-        log(
+        FED_LOGGER.log(
             DEBUG,
             "evaluate_round %s: strategy sampled %s clients (out of %s)",
             server_round,
@@ -167,7 +168,7 @@ class MyServer(Server):
             max_workers=self.max_workers,
             timeout=timeout,
         )
-        log(
+        FED_LOGGER.log(
             DEBUG,
             "evaluate_round %s received %s results and %s failures",
             server_round,
@@ -201,9 +202,9 @@ class MyServer(Server):
         )
 
         if not client_instructions:
-            log(INFO, "fit_round %s: no clients selected, cancel", server_round)
+            FED_LOGGER.log(INFO, "fit_round %s: no clients selected, cancel", server_round)
             return None
-        log(
+        FED_LOGGER.log(
             DEBUG,
             "fit_round %s: strategy sampled %s clients (out of %s)",
             server_round,
@@ -217,7 +218,7 @@ class MyServer(Server):
             max_workers=self.max_workers,
             timeout=timeout,
         )
-        log(
+        FED_LOGGER.log(
             DEBUG,
             "fit_round %s received %s results and %s failures",
             server_round,
@@ -254,15 +255,15 @@ class MyServer(Server):
             client_manager=self._client_manager
         )
         if parameters is not None:
-            log(INFO, "Using initial parameters provided by strategy")
+            FED_LOGGER.log(INFO, "Using initial parameters provided by strategy")
             return parameters
 
         # Get initial parameters from one of the clients
-        log(INFO, "Requesting initial parameters from one random client")
+        FED_LOGGER.log(INFO, "Requesting initial parameters from one random client")
         random_client = self._client_manager.sample(1)[0]
         ins = GetParametersIns(config={})
         get_parameters_res = random_client.get_parameters(ins=ins, timeout=timeout)
-        log(INFO, "Received initial parameters from one random client")
+        FED_LOGGER.log(INFO, "Received initial parameters from one random client")
         return get_parameters_res.parameters
 
 
