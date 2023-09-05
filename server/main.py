@@ -10,8 +10,14 @@ def main():
     dir = os.path.dirname(os.path.dirname(__file__))
     
     with open(file=f"{dir}/config.yaml", mode="r") as f:
+        all_config = yaml.safe_load(f)
+
+    with open(file=f"{dir}/config.yaml", mode="r") as f:
         yaml_server_config = yaml.safe_load(f).get("server")
+        
+    FED_LOGGER.info("Initial all_config:\n%s", all_config)
     FED_LOGGER.info("Initial server_config:\n%s", yaml_server_config)
+    
 
     start_server(
         server_address=yaml_server_config["server_address"],

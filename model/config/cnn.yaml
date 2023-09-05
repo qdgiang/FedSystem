@@ -1,7 +1,7 @@
 n_features: 784
 n_classes: 10
 epochs: 1
-verbose: True
+verbose: False
 batch_size: 64
 learning_rate: 0.01
 momentum: 0.5

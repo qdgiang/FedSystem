@@ -12,6 +12,7 @@ class MyClientManager(ClientManager):
     """Provides a pool of available clients."""
 
     def __init__(self) -> None:
+        FED_LOGGER.info("Create client manager")
         self.clients: Dict[str, ClientProxy] = {}
         self._cv = threading.Condition()
 
@@ -99,7 +100,7 @@ class MyClientManager(ClientManager):
     ) -> List[ClientProxy]:
         """Sample a number of Flower ClientProxy instances."""
         # Block until at least num_clients are connected.
-        print(self.all())
+        FED_LOGGER.debug(self.clients.keys())
         if min_num_clients is None:
             min_num_clients = num_clients
         self.wait_for(min_num_clients)

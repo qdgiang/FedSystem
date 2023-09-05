@@ -2,10 +2,12 @@ import importlib
 import os
 import sys
 sys.path.append((os.path.dirname(__file__)))
+sys.path.append(os.path.dirname((os.path.dirname(os.path.dirname(__file__)))))
+from common.logger import FED_LOGGER
 
 from flwr.server.strategy import Strategy
 def weighted_average(metrics): #List[Tuple[int, Metrics]]) -> Metrics:
-    print("metrics: ", metrics)
+    FED_LOGGER.info("metrics: %s", metrics)
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
     print("accuracies: ", accuracies)

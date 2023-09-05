@@ -103,7 +103,7 @@ def fit(
     epochs = model_config["epochs"]
     verbose = model_config["verbose"]
     DEVICE = torch.device("cpu") #if model_config["device"] == "cpu" else torch.device("cuda:0")
-    print(X_train.dataset[0])
+    #print(X_train.dataset[0])
     for epoch in range(epochs):
         correct, total, epoch_loss = 0, 0, 0.0
         for images, labels in X_train:
@@ -124,10 +124,11 @@ def fit(
             total += labels.size(0)
             correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
         epoch_loss /= len(X_train.dataset)
+        epoch_loss = epoch_loss.item()
         epoch_acc = correct / total
         if verbose:
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
-        return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc}
+        return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc, "loss": epoch_loss}
 
 def evaluate(
     model: Net, X_test: DataLoader, y_test: DataLoader, model_config: dict

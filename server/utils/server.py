@@ -51,7 +51,7 @@ class MyServer(Server):
         )
         self.strategy = strategy #: Strategy = strategy if strategy is not None else MyFedAvg()
         self.max_workers: Optional[int] = None
-
+        self.parameters_update = Dict[str, Parameters]       
     def set_max_workers(self, max_workers: Optional[int]) -> None:
         """Set the max_workers used by ThreadPoolExecutor."""
         self.max_workers = max_workers
@@ -68,7 +68,7 @@ class MyServer(Server):
     def fit(self, num_rounds: int, timeout: Optional[float]) -> MyHistory:
         """Run federated averaging for a number of rounds."""
         history = MyHistory()
-
+        FED_LOGGER.info("FL process begins")
         # Initialize parameters
         FED_LOGGER.log(INFO, "Initializing global parameters")
         self.parameters = self._get_initial_parameters(timeout=timeout)
@@ -78,16 +78,14 @@ class MyServer(Server):
         if res is not None:
             FED_LOGGER.log(
                 INFO,
-                "initial parameters (loss, other metrics): %s, %s",
-                res[0],
-                res[1],
+                "initial parameters (loss, other metrics): %s",
+                res
             )
             history.add_loss_centralized(server_round=0, loss=res[0])
             history.add_metrics_centralized(server_round=0, metrics=res[1])
 
         # Run federated learning for num_rounds
-        FED_LOGGER.log(INFO, "FL starting")
-        print("Hehllo")
+        FED_LOGGER.log(INFO, "FL training loop starts")
         start_time = timeit.default_timer()
 
         for current_round in range(1, num_rounds + 1):
@@ -202,11 +200,11 @@ class MyServer(Server):
         )
 
         if not client_instructions:
-            FED_LOGGER.log(INFO, "fit_round %s: no clients selected, cancel", server_round)
+            FED_LOGGER.log(INFO, "Federated round %s: no clients selected, cancel", server_round)
             return None
         FED_LOGGER.log(
             DEBUG,
-            "fit_round %s: strategy sampled %s clients (out of %s)",
+            "Federated round %s: %s sampled clients (out of %s)",
             server_round,
             len(client_instructions),
             self._client_manager.num_available(),
@@ -225,6 +223,14 @@ class MyServer(Server):
             len(results),
             len(failures),
         )
+
+        #FED_LOGGER.debug(results[0][1].metrics)
+        #FED_LOGGER.debug(type(failures[0]))
+
+        for i in range(len(results)):
+            #self.parameters_update[results[i][0].cid] = results[i][1].parameters
+            print(results[i][0].cid)
+            #print(results[i][0].node_id)
 
         # Aggregate training results
         aggregated_result: Tuple[
@@ -339,7 +345,12 @@ def fit_client(
     client: ClientProxy, ins: FitIns, timeout: Optional[float]
 ) -> Tuple[ClientProxy, FitRes]:
     """Refine parameters on a single client."""
+    #FED_LOGGER.debug("fit_client %s", client.cid)
+    #FED_LOGGER.debug("fit_client type %s", type(client))
+    #FED_LOGGER.debug("fit_client ins %s", type(ins))
+    #FED_LOGGER.debug("fit_client ins all key %s", ins.config.keys())
     fit_res = client.fit(ins, timeout=timeout)
+    #FED_LOGGER.debug("fit_client fit_res %s", type(fit_res))
     return client, fit_res
 
 

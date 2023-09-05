@@ -12,7 +12,7 @@ from flwr.common import (
 )
 from flwr.common.address import parse_address
 from flwr.common.constant import MISSING_EXTRA_REST
-from flwr.common.logger import log
+from common.logger import FED_LOGGER
 from flwr.common.typing import (
     Code,
     EvaluateIns,
@@ -152,7 +152,6 @@ def start_client(
             root_certificates=root_certificates,
         ) as conn:
             receive, send = conn
-
             while True:
                 server_message = receive()
                 if server_message is None:
@@ -161,14 +160,17 @@ def start_client(
                 client_message, sleep_duration, keep_going = handle(
                     client, server_message
                 )
+                #FED_LOGGER.debug("Client message: %s", client_message)
+                #FED_LOGGER.debug("Sleep duration: %s", sleep_duration)
+                #FED_LOGGER.debug("Keep going: %s", keep_going)
                 send(client_message)
                 if not keep_going:
                     break
         if sleep_duration == 0:
-            log(INFO, "Disconnect and shut down")
+            FED_LOGGER.log(INFO, "Disconnect and shut down")
             break
         # Sleep and reconnect afterwards
-        log(
+        FED_LOGGER.log(
             INFO,
             "Disconnect, then re-establish connection after %s second(s)",
             sleep_duration,
@@ -348,5 +350,5 @@ def _wrap_numpy_client(client: NumPyClient) -> Client:
 
 def run_client() -> None:
     """Run Flower client."""
-    log(INFO, "Running Flower client...")
+    FED_LOGGER.log(INFO, "Running Flower client...")
     time.sleep(3)

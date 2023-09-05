@@ -1,6 +1,7 @@
 import importlib
 import yaml
 import os
+from common.logger import FED_LOGGER
 
 class ModelManager:
     def __init__(self, model_name: str) -> None:
@@ -11,7 +12,7 @@ class ModelManager:
         self.model_name = model_name
         self.model_source = importlib.import_module(name=f"model.{self.model_name}")
         self.model = self.model_source.init_model(self.model_config)
-        print(f"Model initialized successfully! Model type: {type(self.model)}")
+        FED_LOGGER.info(f"Model initialized successfully! Model type: {type(self.model)}")
     
     def get_params(self):
         return self.model_source.get_parameters(self.model)
