@@ -164,6 +164,10 @@ class MyFedAvg(Strategy):
         sample_size, min_num_clients = self.num_fit_clients(
             client_manager.num_available()
         )
+        if server_round == 1:
+            sample_size = self.min_available_clients
+            print("First round, sample size is", sample_size)
+            
         clients = client_manager.sample(
             num_clients=sample_size, min_num_clients=min_num_clients
         )

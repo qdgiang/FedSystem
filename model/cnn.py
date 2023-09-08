@@ -97,9 +97,11 @@ def set_parameters(model: Net, parameters: list) -> None:
 def fit(
     model: Net, X_train: DataLoader, y_train: DataLoader, model_config: dict
 ):
+    print(model_config)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
     model.train()
+    client_id = model_config["client_id"]
     epochs = model_config["epochs"]
     verbose = model_config["verbose"]
     DEVICE = torch.device("cpu") #if model_config["device"] == "cpu" else torch.device("cuda:0")
@@ -128,7 +130,7 @@ def fit(
         epoch_acc = correct / total
         if verbose:
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
-        return get_parameters(model), len(X_train.dataset), {"accuracy": epoch_acc, "loss": epoch_loss}
+        return get_parameters(model), len(X_train.dataset), {"client_id": client_id, "accuracy": epoch_acc, "loss": epoch_loss}
 
 def evaluate(
     model: Net, X_test: DataLoader, y_test: DataLoader, model_config: dict

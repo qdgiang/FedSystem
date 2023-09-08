@@ -100,7 +100,7 @@ class MyClientManager(ClientManager):
     ) -> List[ClientProxy]:
         """Sample a number of Flower ClientProxy instances."""
         # Block until at least num_clients are connected.
-        FED_LOGGER.debug(self.clients.keys())
+        #FED_LOGGER.debug(self.clients.keys())
         if min_num_clients is None:
             min_num_clients = num_clients
         self.wait_for(min_num_clients)

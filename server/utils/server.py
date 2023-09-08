@@ -51,7 +51,8 @@ class MyServer(Server):
         )
         self.strategy = strategy #: Strategy = strategy if strategy is not None else MyFedAvg()
         self.max_workers: Optional[int] = None
-        self.parameters_update = Dict[str, Parameters]       
+        self.client_id_url_map: Dict[str, str] = {}
+        self.parameters_update = {}      
     def set_max_workers(self, max_workers: Optional[int]) -> None:
         """Set the max_workers used by ThreadPoolExecutor."""
         self.max_workers = max_workers
@@ -91,14 +92,19 @@ class MyServer(Server):
         for current_round in range(1, num_rounds + 1):
             # Train model and replace previous global model
             res_fit = self.fit_round(server_round=current_round, timeout=timeout)
+            updates_from_clients = []
             if res_fit:
-                parameters_prime, fit_metrics, _ = res_fit  # fit_metrics_aggregated
+                parameters_prime, fit_metrics, updates_from_clients = res_fit #, _ = res_fit  # fit_metrics_aggregated
                 if parameters_prime:
                     self.parameters = parameters_prime
                 history.add_metrics_distributed_fit(
                     server_round=current_round, metrics=fit_metrics
                 )
+            if current_round == 1: # update mapping between client IDs and URLs
+                for update in updates_from_clients[0]:
+                    self.client_id_url_map[update[0].cid] = update[1].metrics.get("client_id")
 
+            FED_LOGGER.info("client_id_url_map: %s", self.client_id_url_map)
             # Evaluate model using strategy implementation
             res_cen = self.strategy.evaluate(current_round, parameters=self.parameters)
             if res_cen is not None:
@@ -190,8 +196,6 @@ class MyServer(Server):
     ) -> Optional[
         Tuple[Optional[Parameters], Dict[str, Scalar], FitResultsAndFailures]
     ]:
-        """Perform a single round of federated averaging."""
-
         # Get clients and their respective instructions from strategy
         client_instructions = self.strategy.configure_fit(
             server_round=server_round,
@@ -216,6 +220,10 @@ class MyServer(Server):
             max_workers=self.max_workers,
             timeout=timeout,
         )
+
+        """Perform a single round of federated averaging."""
+        FED_LOGGER.log(INFO, "*****************************************fit_round %s", server_round)
+
         FED_LOGGER.log(
             DEBUG,
             "fit_round %s received %s results and %s failures",
@@ -230,7 +238,9 @@ class MyServer(Server):
         for i in range(len(results)):
             #self.parameters_update[results[i][0].cid] = results[i][1].parameters
             print(results[i][0].cid)
+            print(results[i][1].metrics)
             #print(results[i][0].node_id)
+        
 
         # Aggregate training results
         aggregated_result: Tuple[

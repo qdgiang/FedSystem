@@ -14,6 +14,7 @@ class MyClient(NumPyClient):
     ):
         self.data_manager = data_manager
         self.model_manager = model_manager
+        self.cid = self.data_manager.cid
         FED_LOGGER.info(f"Client {self.data_manager.cid} initialized")
         
     def set_parameters(self, parameters, config: dict):
@@ -25,7 +26,11 @@ class MyClient(NumPyClient):
     def fit(self, parameters, config: dict):
         self.set_parameters(parameters, config)
         FED_LOGGER.info(f"[Client {self.data_manager.cid}] Local model fitting started!")
-        updates, length, metrics = self.model_manager.fit_model(self.data_manager.get_training_data(), self.data_manager.get_training_label())
+        updates, length, metrics = self.model_manager.fit_model(
+            self.data_manager.get_training_data(), 
+            self.data_manager.get_training_label(), 
+            {"client_id": self.cid}
+        )
         FED_LOGGER.info(f"[Client {self.data_manager.cid}] Local model fitting finished! Metrics: {metrics}")
         return updates, length, metrics
     def evaluate(self, parameters, config: dict):

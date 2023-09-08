@@ -23,8 +23,8 @@ class ModelManager:
     def get_model(self):
         return self.model
     
-    def fit_model(self, X_train, y_train):
-        return self.model_source.fit(self.model, X_train, y_train, self.model_config)
+    def fit_model(self, X_train, y_train, additonal_config):
+        return self.model_source.fit(self.model, X_train, y_train, self.model_config | additonal_config)
     
     def evaluate_model(self, X_test, y_test): # also use for server model final central testing
         return self.model_source.evaluate(self.model, X_test, y_test, self.model_config)
