@@ -14,7 +14,7 @@ class DataManager:
         if node_type == "client":
             self.X_train, self.y_train, self.X_val, self.y_val = data_source.get_client_data(self.cid, self.data_config)
         else:
-            (self.X_test, self.y_test) = data_source.get_server_data()
+            (self.X_test, self.y_test) = data_source.get_server_data(self.data_config)
         FED_LOGGER.info(f"[{self.node_type} {self.cid}] Data imported sucessfully. Data name: {self.data_name}")
 
     def get_training_data(self):

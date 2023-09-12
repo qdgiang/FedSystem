@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, Normalize, ToTensor
 from collections import OrderedDict
 import numpy
+from common.logger import FED_LOGGER
 
 """
 class Net(nn.Module):
@@ -143,7 +144,7 @@ def evaluate(
     DEVICE = torch.device("cpu") #if model_config["cuda"] == False else torch.device("cuda:0")
 
     with torch.no_grad():
-        for images, labels in X_test, y_test:
+        for images, labels in X_test:
             images, labels = images.to(DEVICE), labels.to(DEVICE)
             outputs = model(images)
             loss += criterion(outputs, labels).item()

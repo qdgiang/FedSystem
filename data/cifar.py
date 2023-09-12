@@ -7,7 +7,7 @@ import os
 BATCH_SIZE = 32
 
 
-def load_cifar(NUM_CLIENTS = 5):
+def load_cifar(NUM_CLIENTS = 4):
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
@@ -27,8 +27,21 @@ def get_client_data(partition_id: int, config: dict):
     len_train = len(trainset) - len_val
     lengths = [len_train, len_val]
     ds_train, ds_val = random_split(trainset, lengths, torch.Generator().manual_seed(42))
+    
+    # if partition_id == 3, randomized the labels of the training set
+    if partition_id in [2,3]:
+        print("Randomized the labels of the training set")
+        print("Before: ") 
+        print(ds_train.dataset.dataset.targets)
+        ds_train.dataset.dataset.targets = torch.randint(0, 10, (50000,))
+        print("After: ")
+        print(ds_train.dataset.dataset.targets)
+        
     trainloader = DataLoader(ds_train, batch_size=BATCH_SIZE, shuffle=True)
     valloader = DataLoader(ds_val, batch_size=BATCH_SIZE)
+    
+
+        
     return trainloader, None, valloader, None
 
 def get_server_data(config: dict):
@@ -37,6 +50,6 @@ def get_server_data(config: dict):
     )
     testset = CIFAR10("./dataset", train=False, download=True, transform=transform)
     testloader = DataLoader(testset, batch_size=BATCH_SIZE)
-    return testloader
+    return testloader, None
 
 

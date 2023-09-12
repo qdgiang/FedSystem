@@ -18,8 +18,8 @@ def strategy_chooser(strategy_name: str, strategy_config: dict) -> Strategy:
     if strategy_name == "fedavg":
         print("Strategy: FedAvg")
         return strategy_file.MyFedAvg(
-            fraction_fit=0.05,
-            min_available_clients=5,
+            fraction_fit=1,
+            min_available_clients=4,
             min_fit_clients=4,
             fraction_evaluate=0,
             min_evaluate_clients=0,
