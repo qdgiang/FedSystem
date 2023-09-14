@@ -31,11 +31,11 @@ def get_client_data(partition_id: int, config: dict):
     # if partition_id == 3, randomized the labels of the training set
     if partition_id in [2,3]:
         print("Randomized the labels of the training set")
-        print("Before: ") 
-        print(ds_train.dataset.dataset.targets)
+        #print("Before: ") 
+        #print(ds_train.dataset.dataset.targets)
         ds_train.dataset.dataset.targets = torch.randint(0, 10, (50000,))
-        print("After: ")
-        print(ds_train.dataset.dataset.targets)
+        #print("After: ")
+        #print(ds_train.dataset.dataset.targets)
         
     trainloader = DataLoader(ds_train, batch_size=BATCH_SIZE, shuffle=True)
     valloader = DataLoader(ds_val, batch_size=BATCH_SIZE)

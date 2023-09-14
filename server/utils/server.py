@@ -16,6 +16,7 @@ from flwr.common.typing import (
     Scalar,
 )
 
+from .shapley import ShapleyHelper
 from common.logger import FED_LOGGER
 from flwr.common.typing import GetParametersIns
 from .client_manager import ClientManager
@@ -42,28 +43,6 @@ ReconnectResultsAndFailures = Tuple[
     List[Union[Tuple[ClientProxy, DisconnectRes], BaseException]],
 ]
 
-def get_all_subset(num_of_participants):
-    all_subset = []
-    for i in range(1, num_of_participants+1):
-        all_subset.extend(list(itertools.combinations(range(num_of_participants), i)))
-    return all_subset
-
-def get_all_permutation(num_of_participants):
-    all_permutation = []
-    for i in range(num_of_participants):
-        all_permutation.extend(list(itertools.permutations(range(num_of_participants), num_of_participants)))
-    return all_permutation
-
-def turn_tuple_to_set(all_subset):
-    all_set = []
-    for i in range(len(all_subset)):
-        all_set.append(frozenset(all_subset[i]))
-    return all_set
-
-class ShapleyHelper:
-    def __init__(self) -> None:
-        pass
-
 class MyServer(Server):
     """Flower server."""
 
@@ -78,12 +57,10 @@ class MyServer(Server):
         self.max_workers: Optional[int] = None
         self.url2cid = {}
         self.cid2url = {}
-        self.parameters_updates: Dict = {}
-        self.subset_score: Dict[frozenset[int], float] = {}
-        self.permutation_score = {}  
+        self.parameters_updates: Dict[int, Tuple[Parameters, int]] = {}
         self.data_manager = data_manager
         self.model_manager = model_manager
-        self.client_score = {}
+        self.shapley_helper: ShapleyHelper # not initialized here because we don't know the number of clients yet
 
     def aggr_from_cid_list(self, cid_list: Tuple[int]) -> Parameters:
         weights_and_no = [
@@ -99,6 +76,7 @@ class MyServer(Server):
     def score_from_aggr(self) -> float:
         _, __, res = self.model_manager.evaluate_model(self.data_manager.get_test_data(),self.data_manager.get_test_label())
         return res.get("accuracy")
+    
     def set_max_workers(self, max_workers: Optional[int]) -> None:
         """Set the max_workers used by ThreadPoolExecutor."""
         self.max_workers = max_workers
@@ -136,7 +114,8 @@ class MyServer(Server):
         start_time = timeit.default_timer()
 
         for current_round in range(1, num_rounds + 1):
-            # Train model and replace previous global model
+
+            # 1. Train model and replace previous global model
             res_fit = self.fit_round(server_round=current_round, timeout=timeout)
             updates_from_clients = []
             if res_fit:
@@ -146,76 +125,34 @@ class MyServer(Server):
                 history.add_metrics_distributed_fit(
                     server_round=current_round, metrics=fit_metrics
                 )
-            if current_round == 1: # update mapping between client IDs and URLs
-                for update in updates_from_clients[0]:
+
+
+            # 2. Save all parameter updates from clients
+            for update in updates_from_clients[0]:
+                if current_round == 1:
                     self.url2cid[update[0].cid] = update[1].metrics.get("client_id")
                     self.cid2url[update[1].metrics.get("client_id")] = update[0].cid
-                    self.client_score[update[1].metrics.get("client_id")] = 0
-            FED_LOGGER.log(INFO, self.client_score)
-            FED_LOGGER.log(INFO, type(self.client_score.keys()))
-            # temp save all parameters upates
-            for update in updates_from_clients[0]:
+                    self.shapley_helper = ShapleyHelper(no_of_players=len(self.url2cid))
                 one_cid = update[1].metrics.get("client_id")
                 one_num_examples = update[1].num_examples
                 self.parameters_updates[one_cid] = (update[1].parameters, one_num_examples)
+            self.shapley_helper.prepare()
 
-            # iterate through list of subsets and evaluate each subset
-            list_of_tuples = get_all_subset(len(self.url2cid))
-            list_of_combinations = turn_tuple_to_set(list_of_tuples)
-            score_of_biggest_subset = 0
-            dict_of_individual_scores = {}
-            for comb in list_of_combinations:
-                temp_agg = self.aggr_from_cid_list(comb)
-                self.model_manager.set_params(parameters_to_ndarrays(temp_agg))
+            # 3. Iterate through list of subsets and evaluate each subset
+            for subset in self.shapley_helper.list_of_subsets:
+                temp_aggr = self.aggr_from_cid_list(subset)
+                self.model_manager.set_params(parameters_to_ndarrays(temp_aggr))
                 temp_score = self.score_from_aggr()
-                self.subset_score[comb] = temp_score
-                if len(comb) == len(self.url2cid):
-                    score_of_biggest_subset = temp_score
-                if len(comb) == 1:
-                    id_of_score, = comb 
-                    dict_of_individual_scores[id_of_score] = temp_score
-            self.parameters_updates = {}
-            FED_LOGGER.log(INFO, "subset_score (preparation for shapley calculation): %s", self.subset_score)
-            FED_LOGGER.log(INFO, "Combination of all clients: (preparation for shapley calculation): %s", score_of_biggest_subset)
-            FED_LOGGER.log(INFO, "Individual scores: (preparation for shapley calculation): %s", dict_of_individual_scores)
-            list_of_permutations = get_all_permutation(len(self.url2cid))
-            
-            permutation_all_scores_raw = {}
-            # Shapley calculation
-            for per in list_of_permutations:
-                dict_of_individual_scores_for_this_permutation = {}
-                list_of_players = list(per)
-                list_of_players_already_evaluated = []
-                contribution_so_far = 0
-                while list_of_players != []:
-                    next_player = list_of_players.pop(0)
-                    list_of_players_already_evaluated.append(next_player)
-                    #if per == (4,2,0,3,1):
-                    #FED_LOGGER.info("list_of_players_already_evaluated: %s", list_of_players_already_evaluated)
-                    #FED_LOGGER.info("list_of_players: %s", list_of_players)
-                    #FED_LOGGER.info("next_player: %s", next_player)
-                    #FED_LOGGER.info(self.subset_score.get(frozenset(list_of_players_already_evaluated)))
+                self.shapley_helper.set_subset_score(subset=subset, score=temp_score)
+            self.parameters_updates = {} # clear heavy parameter updates
 
-                    required_score = self.subset_score.get(frozenset(list_of_players_already_evaluated))
-                    player_contribution = max(required_score - contribution_so_far, 0)
-                    dict_of_individual_scores_for_this_permutation[next_player] = player_contribution
-                    contribution_so_far += player_contribution
-                permutation_all_scores_raw[per] = dict_of_individual_scores_for_this_permutation
+            # 4. Calculate Shapley scores
+            self.shapley_helper.shapley_calculation()
+            self.shapley_helper.log()
+            self.shapley_helper.clear_values()
+            self.shapley_helper.log()
 
-            FED_LOGGER.log(INFO, "permutation_all_scores_raw: %s", permutation_all_scores_raw)
-            for score in permutation_all_scores_raw.values():
-                for key, value in score.items():
-                    self.client_score[key] += value
-            overall_score = 0
-
-            for c in self.client_score.keys():
-                overall_score += self.client_score[c]
-
-            for c in self.client_score.keys():
-                self.client_score[c] = self.client_score[c] / overall_score
-            FED_LOGGER.log(INFO, "client_score: %s", self.client_score)
-
-            # Evaluate model using strategy implementation
+            # 5. Evaluate model using strategy implementation
             res_cen = self.strategy.evaluate(current_round, parameters=self.parameters)
             if res_cen is not None:
                 loss_cen, metrics_cen = res_cen
@@ -232,7 +169,7 @@ class MyServer(Server):
                     server_round=current_round, metrics=metrics_cen
                 )
 
-            # Evaluate model on a sample of available clients
+            # 6. Evaluate model on a sample of available clients
             res_fed = self.evaluate_round(server_round=current_round, timeout=timeout)
             if res_fed:
                 loss_fed, evaluate_metrics_fed, _ = res_fed
