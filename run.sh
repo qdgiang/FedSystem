@@ -11,8 +11,8 @@ intexit() {
 
 trap intexit SIGINT
 
-echo "Starting client"
-for i in {0..3..1} 
+echo "Starting the clients"
+for i in {0..4..1} 
 do
     echo "Starting client $i"
     python client/run_client.py --cid=${i} &

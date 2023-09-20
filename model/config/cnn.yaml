@@ -1,4 +1,4 @@
-n_features: 784
+n_features: 1024
 n_classes: 10
 epochs: 1
 verbose: False

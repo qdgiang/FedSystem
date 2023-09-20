@@ -19,8 +19,8 @@ def strategy_chooser(strategy_name: str, strategy_config: dict) -> Strategy:
         print("Strategy: FedAvg")
         return strategy_file.MyFedAvg(
             fraction_fit=1,
-            min_available_clients=4,
-            min_fit_clients=4,
+            min_available_clients=5,
+            min_fit_clients=5,
             fraction_evaluate=0,
             min_evaluate_clients=0,
             #fit_metrics_aggregation_fn=weighted_average,

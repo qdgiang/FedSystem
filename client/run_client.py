@@ -26,6 +26,7 @@ def main() -> None:
     data_config = {
         "cid": args.cid,
         "data": common_config["data"],
+        "advanced_name": common_config["advanced_name"],
         "split": common_config["split"],
     }
 

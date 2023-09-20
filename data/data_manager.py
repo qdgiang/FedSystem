@@ -4,7 +4,7 @@ from common.logger import FED_LOGGER
 class DataManager:
     def __init__(self, node_type: str, config: dict) -> None:
         data_name = config["data"]
-        assert data_name in ["mnist", "cifar", "heart", "tcga"]
+        assert data_name in ["mnist", "cifar", "heart", "tcga", "advanced"]
         self.data_name = data_name
         self.node_type = node_type
         self.data_config = config

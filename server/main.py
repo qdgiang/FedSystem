@@ -21,6 +21,7 @@ def main():
     data_config = {
         "cid": -1,
         "data": common_config["data"],
+        "advanced_name": common_config["advanced_name"],
         "split": common_config["split"],
     }
     data_manager = DataManager(

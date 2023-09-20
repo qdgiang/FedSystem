@@ -7,11 +7,11 @@ from collections import OrderedDict
 import numpy
 from common.logger import FED_LOGGER
 
-"""
+
 class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
@@ -24,7 +24,9 @@ class Net(nn.Module):
         x = x.view(-1, 16 * 5 * 5)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        return self.fc3(x)"""
+        return self.fc3(x)
+    
+"""
 # define CNN, input is torch.Size([32, 3, 32, 32]), output is torch.Size([32, 10])
 class Net(nn.Module):
     def __init__(self):
@@ -60,29 +62,6 @@ class Net(nn.Module):
         return x
 
 """
-# define a simple CNN that accpet MNIST images, input size is torch.Size([1, 784]), output size is torch.Size([1, 10])
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        # input size is torch.Size([1, 784])
-        self.fc1 = nn.Linear(784, 512)
-        self.fc2 = nn.Linear(512, 256)
-        # output size is torch.Size([1, 10])
-        self.fc3 = nn.Linear(256, 10)
-
-    def forward(self, x):
-        # input size is torch.Size([1, 784])
-        x = x.view(-1, 784)
-        # hidden size is torch.Size([1, 512])
-        x = F.relu(self.fc1(x))
-        # hidden size is torch.Size([1, 256])
-        x = F.relu(self.fc2(x))
-        # output size is torch.Size([1, 10])
-        x = self.fc3(x)
-        return x
-    """
-
-
 
 def init_model(model_config: dict) -> Net:
     return Net()
@@ -150,7 +129,10 @@ def evaluate(
             loss += criterion(outputs, labels).item()
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
+    #print("correct is" + str(correct))
+            #correct += (predicted == labels).sum().item()
     loss /= len(X_test.dataset)
+    #print(len(X_test.dataset))
     accuracy = correct / total
     return loss, len(X_test.dataset), {"accuracy": accuracy}
