@@ -26,7 +26,7 @@ from flwr.server.strategy import Strategy
 from flwr.server.server import Server
 from strategy import MyFedAvg
 import itertools
-from .conversion import parameters_to_ndarrays, ndarrays_to_parameters, my_aggregate
+from .aggregate import parameters_to_ndarrays, ndarrays_to_parameters, normal_aggregate, weighted_aggregate
 from data.data_manager import DataManager
 from model.model_manager import ModelManager
 
@@ -62,17 +62,32 @@ class MyServer(Server):
         self.model_manager = model_manager
         self.shapley_helper: ShapleyHelper # not initialized here because we don't know the number of clients yet
 
-    def aggr_from_cid_list(self, cid_list: Tuple[int]) -> Parameters:
+    def normal_aggr_from_cid_list(self, cid_list: Tuple[int]) -> Parameters:
         weights_and_no = [
             (
                 parameters_to_ndarrays(self.parameters_updates.get(cid)[0]), 
-                self.parameters_updates.get(cid)[1]
+                self.parameters_updates.get(cid)[1],
+                self.shapley_helper.get_weights().get(cid)
             )
             for cid in cid_list
         ]
-        aggregated_weights = ndarrays_to_parameters(my_aggregate(weights_and_no))
+
+        aggregated_weights = ndarrays_to_parameters(normal_aggregate(weights_and_no))
         return aggregated_weights
     
+    def weighted_aggr_from_cid_list(self, cid_list: Tuple[int]) -> Parameters:
+        weights_and_no = [
+            (
+                parameters_to_ndarrays(self.parameters_updates.get(cid)[0]), 
+                self.parameters_updates.get(cid)[1],
+                self.shapley_helper.get_weights().get(cid)
+            )
+            for cid in cid_list
+        ]
+
+        aggregated_weights = ndarrays_to_parameters(weighted_aggregate(weights_and_no))
+        return aggregated_weights
+
     def score_from_aggr(self) -> float:
         _, __, res = self.model_manager.evaluate_model(self.data_manager.get_test_data(),self.data_manager.get_test_label())
         return res.get("accuracy")
@@ -112,16 +127,16 @@ class MyServer(Server):
         # Run federated learning for num_rounds
         FED_LOGGER.log(INFO, "FL training loop starts")
         start_time = timeit.default_timer()
-
+        
         for current_round in range(1, num_rounds + 1):
 
-            # 1. Train model and replace previous global model
+            # 1. Train model in local clients and get updates
             res_fit = self.fit_round(server_round=current_round, timeout=timeout)
             updates_from_clients = []
             if res_fit:
                 parameters_prime, fit_metrics, updates_from_clients = res_fit #, _ = res_fit  # fit_metrics_aggregated
-                if parameters_prime:
-                    self.parameters = parameters_prime
+                #if parameters_prime:
+                #    self.parameters = parameters_prime
                 history.add_metrics_distributed_fit(
                     server_round=current_round, metrics=fit_metrics
                 )
@@ -140,17 +155,28 @@ class MyServer(Server):
 
             # 3. Iterate through list of subsets and evaluate each subset
             for subset in self.shapley_helper.list_of_subsets:
-                temp_aggr = self.aggr_from_cid_list(subset)
+                temp_aggr = self.normal_aggr_from_cid_list(subset)
                 self.model_manager.set_params(parameters_to_ndarrays(temp_aggr))
                 temp_score = self.score_from_aggr()
                 self.shapley_helper.set_subset_score(subset=subset, score=temp_score)
+                
+            self.parameters = self.weighted_aggr_from_cid_list(
+                    cid_list=range(0, len(self.url2cid), 1)
+                )
             self.parameters_updates = {} # clear heavy parameter updates
 
             # 4. Calculate Shapley scores
             self.shapley_helper.shapley_calculation()
+            self.shapley_helper.update_weights()
             self.shapley_helper.log()
+            
+            # 4.5 Get the score of weighted model
+            self.model_manager.set_params(parameters_to_ndarrays(self.parameters))
+            weighted_score = self.score_from_aggr()
+            FED_LOGGER.info(f"Score of weighted model: {weighted_score}")
+            FED_LOGGER.info("---------------------------------------------------")
             self.shapley_helper.clear_values()
-            self.shapley_helper.log()
+
 
             # 5. Evaluate model using strategy implementation
             res_cen = self.strategy.evaluate(current_round, parameters=self.parameters)

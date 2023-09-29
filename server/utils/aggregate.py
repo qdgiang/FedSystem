@@ -2,12 +2,12 @@
 
 from functools import reduce
 from io import BytesIO
-from typing import List, Tuple, cast
+from typing import List, Tuple, cast, Dict
 import numpy as np
 
 from flwr.common.typing import NDArray, NDArrays, Parameters
 
-def my_aggregate(results: List[Tuple[NDArrays, int]]) -> NDArrays:
+def normal_aggregate(results: List[Tuple[NDArrays, int, float]]) -> NDArrays:
     """Compute weighted average."""
     # Calculate the total number of examples used during training
     num_examples_total = sum([res[1] for res in results])
@@ -24,6 +24,21 @@ def my_aggregate(results: List[Tuple[NDArrays, int]]) -> NDArrays:
     # Compute average weights of each layer
     weights_prime: NDArrays = [
         reduce(np.add, layer_updates) / num_examples_total
+        for layer_updates in zip(*weighted_weights)
+    ]
+    return weights_prime
+
+def weighted_aggregate(results: List[Tuple[NDArrays, int, float]]) -> NDArrays:
+    num_examples_total = sum([res[1] for res in results])
+    weights_total = sum([res[2] for res in results])
+
+    weighted_weights = [
+        [layer * res[2] for layer in res[0]] for res in results
+    ]
+
+    # Compute average weights of each layer
+    weights_prime: NDArrays = [
+        reduce(np.add, layer_updates) / weights_total
         for layer_updates in zip(*weighted_weights)
     ]
     return weights_prime
