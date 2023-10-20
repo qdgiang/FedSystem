@@ -1,1 +1,1 @@
-Server will always initialize model
+# Studying contribution techniques in Federated Learning
